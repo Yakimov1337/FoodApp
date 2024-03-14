@@ -1,18 +1,19 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MenuItem } from '../../../models/food-menu-item';
 import { CurrencyPipe } from '@angular/common';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { MenuItem } from '../../../../../../core/models';
+import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 
 @Component({
     selector: '[menuItem-auctions-table-item]',
     templateUrl: './menuItem-auctions-table-item.component.html',
     standalone: true,
-    imports: [AngularSvgIconModule, CurrencyPipe],
+    imports: [AngularSvgIconModule, CurrencyPipe,ButtonComponent],
 })
 export class MenuItemAuctionsTableItemComponent implements OnInit {
-  @Input() auction = <MenuItem>{};
-
+  @Input() item: MenuItem = <MenuItem>{};
   constructor() {}
 
-  ngOnInit(): void {}
+
+  ngOnInit(): void {  console.log()}
 }
