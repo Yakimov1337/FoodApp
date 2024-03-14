@@ -19,7 +19,7 @@ export class SignUpComponent implements OnInit {
   signUpForm!: FormGroup;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {}
-  
+
   ngOnInit() {
     this.signUpForm = this.fb.group(
       {
@@ -43,6 +43,9 @@ export class SignUpComponent implements OnInit {
       const { email, password } = this.signUpForm.value;
       this.authService
         .createUserAccount({ email, password })
+        .then(() => {
+          this.authService.signInAccount(email, password);
+        })
         .then(() => {
           this.router.navigate(['/']);
         })
