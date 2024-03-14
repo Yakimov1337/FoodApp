@@ -6,14 +6,15 @@ export interface User {
   accountId: ID;
   name: string;
   email: string;
+  imageUrl: URL;
   role: Role;
   orders: Order[];
-  createdMenuItems: MenuItem[];
+  menuItems: MenuItem[];
 }
 
 export enum Role {
-  'Normal',
-  'Moderator',
-  'Admin',
-  'Super Admin',
+  Normal = 'Normal',
+  Moderator = 'Moderator',
+  Admin = 'Admin',
+  SuperAdmin = 'Super Admin',
 }
