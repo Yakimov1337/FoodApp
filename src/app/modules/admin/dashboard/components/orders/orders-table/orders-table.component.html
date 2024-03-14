@@ -1,0 +1,42 @@
+<div class="flex-col rounded-lg bg-background px-8 py-8 sm:flex-row">
+  <div class="mb-4 flex items-center justify-between">
+    <div class="flex-col items-center">
+      <h3 class="text-md font-bold text-foreground">Orders Live Data</h3>
+      <span class="text-xs text-muted-foreground">Updated 3 minutes ago</span>
+    </div>
+    <button
+      class="flex-none rounded-md bg-card px-4 py-2.5 text-xs font-semibold text-muted-foreground hover:bg-muted hover:text-foreground">
+      History
+    </button>
+  </div>
+
+  <div class="relative overflow-x-auto">
+    <div *ngIf="isLoading" class="mx-auto p-48">
+      <app-loader></app-loader>
+    </div>
+    <table *ngIf="!isLoading" class="w-full table-auto">
+      <!--Table head-->
+      <thead class="text-xs uppercase text-muted-foreground border-b-2">
+        <tr>
+          <th class="py-3 text-left">Order ID</th>
+          <th class="py-3 ">Status</th>
+          <th class="py-3">Date</th>
+          <th class="py-3">Cost $</th>
+          <th class="py-3">Dummy</th>
+          <th class="py-3 text-end">Actions</th>
+        </tr>
+      </thead>
+      <!--end Table head-->
+      <!--Table body-->
+      <tbody>
+        <tr
+          *ngFor="let order of orders"
+          orders-table-item
+          [order]="order"
+          class="border-b border-dashed border-border hover:bg-card"></tr>
+      </tbody>
+
+      <!--end::Table body-->
+    </table>
+  </div>
+</div>

@@ -1,0 +1,52 @@
+<td class="py-2 pr-2 ">
+  <div class="orders-center flex">
+    <img
+      src="./assets/icons/heroicons/outline/delivery.svg "
+      class="mr-2 h-10 w-10 flex-none rounded-md dark:bg-white p-0.5 "
+      alt="" />
+    <div class="justify-orders-start flex min-w-0 flex-col">
+      <a href="#" class="mb-1 truncate text-sm font-semibold text-foreground">{{ order.$id }}</a>
+      <span class="truncate text-xs font-semibold text-muted-foreground/50">{{ order.totalCost | currency }}</span>
+    </div>
+  </div>
+</td>
+<td class="py-2 text-center">
+  <div class="flex  justify-center items-center">
+  <span class="text-sm min-w-[96px] font-semibold p-1.5 rounded-md text-white" [ngClass]="{
+      'bg-yellow-500/70': order.status === 'pending',
+      'bg-green-500/80 ': order.status === 'completed',
+      'bg-red-500/70 ': order.status === 'cancelled'
+    }">{{ order.status }}</span></div>
+</td>
+<td class="py-2 text-center">
+  <span class="text-sm font-semibold text-muted-foreground">{{ order.createdOn | date:'shortDate' }}</span>
+</td>
+
+<td class="py-2 text-center">
+  <span class="text-sm font-semibold text-muted-foreground">{{ order.totalCost | currency}} </span>
+</td>
+<td class="py-2 text-center">
+  <span class="text-sm font-semibold text-muted-foreground">{{ order.status }}</span>
+</td>
+<td class="py-2 text-center">
+  <div class="flex justify-end gap-4">
+    <app-button routerLink="/" impact="light" tone="warning" shape="rounded" size="medium" class="text-white">
+      <div class="flex items-center justify-center space-x-2">
+        <span>Edit</span>
+        <svg-icon src="assets/icons/heroicons/outline/edit.svg"></svg-icon>
+      </div>
+    </app-button>
+    <app-button routerLink="/" impact="light" tone="info" shape="rounded" size="medium" >
+      <div class="flex items-center justify-center space-x-2">
+        <span>Update</span>
+        <svg-icon src="assets/icons/heroicons/outline/update.svg"></svg-icon>
+      </div>
+    </app-button>
+    <app-button routerLink="/" impact="light" tone="danger" shape="rounded" size="medium">
+      <div class="flex items-center justify-center space-x-2">
+        <span>Delete</span>
+        <svg-icon src="assets/icons/heroicons/outline/delete.svg"></svg-icon>
+      </div>
+    </app-button>
+  </div>
+</td>
