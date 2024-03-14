@@ -7,6 +7,7 @@ export interface User {
   name: string;
   email: string;
   imageUrl: URL;
+  phoneNumber: string;
   role: Role;
   orders: Order[];
   menuItems: MenuItem[];
