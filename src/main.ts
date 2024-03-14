@@ -1,4 +1,4 @@
-import { enableProdMode, importProvidersFrom } from '@angular/core';
+import { enableProdMode, importProvidersFrom, isDevMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { environment } from './environments/environment';
@@ -6,6 +6,10 @@ import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from './app/app-routing.module';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { modalReducer } from './app/core/state/modal/modal.reducer';
 
 if (environment.production) {
   enableProdMode();
@@ -16,7 +20,7 @@ if (environment.production) {
 }
 
 bootstrapApplication(AppComponent, {
-  providers: [importProvidersFrom(BrowserModule, AppRoutingModule), provideAnimations()],
+  providers: [importProvidersFrom(BrowserModule, AppRoutingModule), provideAnimations(), provideStore({ modals: modalReducer }), provideEffects(), provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() })],
 }).catch((err) => console.error(err));
 
 function selfXSSWarning() {
