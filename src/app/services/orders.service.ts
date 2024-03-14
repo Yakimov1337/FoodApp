@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Client, Databases, Query } from 'appwrite';
+import { Query } from 'appwrite';
 import { environment } from 'src/environments/environment.local';
-import { account, databases, ID } from '../core/lib/appwrite';
+import { databases, ID } from '../core/lib/appwrite';
 import { Order } from '../core/models';
 
 @Injectable({
@@ -23,11 +23,11 @@ export class OrdersService {
   }
 
   // Get all Orders
-  async getAllOrders(): Promise<any[]> {
+  async getAllOrders(): Promise<Order[]> {
     try {
       const result = await databases.listDocuments(this.databaseId, this.ordersCollectionId, [Query.orderDesc("$createdAt"), Query.limit(20)]);
       if (!result) throw Error;
-      return result.documents;
+      return result.documents as unknown as Order[];
     } catch (error) {
       console.error('Error fetching orders:', error);
       throw error;
