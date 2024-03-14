@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { account, databases, ID } from '../core/lib/appwrite';
+import { account, avatars, databases, ID } from '../core/lib/appwrite';
 import { environment } from 'src/environments/environment.local';
 import { User, Role } from '../core/models/user.model';
 
@@ -8,16 +8,17 @@ import { User, Role } from '../core/models/user.model';
 })
 export class AuthService {
   constructor() {}
+
   // Create user account and save the user to the database
   async createUserAccount(user: { email: string; password: string }) {
     try {
       // Create account using Appwrite's account service
       console.log(user);
       const newAccount = await account.create(ID.unique(), user.email, user.password);
-
+      console.log(newAccount);
       if (!newAccount) throw Error;
-      // Placeholder for avatar URL. Implement your logic to generate or define the avatar URL.
-      const avatarUrl = 'https://example.com/avatar.png';
+      // Generates image url with initials
+      const avatarUrl = avatars.getInitials(user.email);
 
       // Create a new user in the database with additional details
       const newUser: User = {
@@ -25,8 +26,9 @@ export class AuthService {
         name: '',
         email: newAccount.email,
         role: Role.Normal,
+        imageUrl: avatarUrl,
         orders: [], // Initial empty array for orders
-        createdMenuItems: [], // Initial empty array for created menu items
+        menuItems: [], // Initial empty array for created menu items
       };
       await this.saveUserToDB(newUser);
       return newUser;
@@ -45,7 +47,7 @@ export class AuthService {
         ID.unique(),
         user,
       );
-      return newUser as unknown as User
+      return newUser as unknown as User;
     } catch (error) {
       console.error('Error saving user to database:', error);
       throw error;
