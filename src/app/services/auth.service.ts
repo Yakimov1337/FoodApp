@@ -24,6 +24,7 @@ export class AuthService {
       const newUser: User = {
         accountId: newAccount.$id,
         name: '',
+        phoneNumber: '',
         email: newAccount.email,
         role: Role.Normal,
         imageUrl: avatarUrl,
