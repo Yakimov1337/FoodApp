@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { from, Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Query } from 'appwrite';
 import { environment } from 'src/environments/environment.local';
 import { databases, ID } from '../core/lib/appwrite';
@@ -11,59 +13,61 @@ export class OrdersService {
   private readonly databaseId = environment.appwriteDatabaseId;
   private readonly ordersCollectionId = environment.ordersCollectionId;
 
-  //Create an Order
-  async createOrder(orderData: Order): Promise<Order> {
-    try {
-      const result = await databases.createDocument(this.databaseId, this.ordersCollectionId, ID.unique(), orderData);
-      return result as unknown as Order;
-    } catch (error) {
-      console.error('Error creating order:', error);
-      throw error;
-    }
+  // Create an Order
+  createOrder(orderData: Order): Observable<Order> {
+    return from(databases.createDocument(this.databaseId, this.ordersCollectionId, ID.unique(), orderData)).pipe(
+      map(result => result as unknown as Order),
+      catchError(error => {
+        console.error('Error creating order:', error);
+        throw error;
+      })
+    );
   }
 
   // Get all Orders
-  async getAllOrders(): Promise<Order[]> {
-    try {
-      const result = await databases.listDocuments(this.databaseId, this.ordersCollectionId, [Query.orderDesc("$createdAt"), Query.limit(20)]);
-      if (!result) throw Error;
-      return result.documents as unknown as Order[];
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      throw error;
-    }
+  getAllOrders(): Observable<Order[]> {
+    return from(databases.listDocuments(this.databaseId, this.ordersCollectionId, [Query.orderDesc("$createdAt"), Query.limit(20)])).pipe(
+      map(result => {
+        if (!result) throw new Error('No result');
+        return result.documents as unknown as Order[];
+      }),
+      catchError(error => {
+        console.error('Error fetching orders:', error);
+        throw error;
+      })
+    );
   }
 
   // Get a single Order by ID
-  async getOrderById(orderId: string): Promise<Order> {
-    try {
-      const result = await databases.getDocument(this.databaseId, this.ordersCollectionId, orderId);
-      return result  as unknown as Order;;
-    } catch (error) {
-      console.error('Error fetching order:', error);
-      throw error;
-    }
+  getOrderById(orderId: string): Observable<Order> {
+    return from(databases.getDocument(this.databaseId, this.ordersCollectionId, orderId)).pipe(
+      map(result => result as unknown as Order),
+      catchError(error => {
+        console.error('Error fetching order:', error);
+        throw error;
+      })
+    );
   }
 
   // Update an Order
-  async updateOrder(orderId: string, orderData: Partial<Order>): Promise<Order> {
-    try {
-      const result = await databases.updateDocument(this.databaseId, this.ordersCollectionId, orderId, orderData);
-      return result  as unknown as Order;;
-    } catch (error) {
-      console.error('Error updating order:', error);
-      throw error;
-    }
+  updateOrder(orderId: string, orderData: Partial<Order>): Observable<Order> {
+    return from(databases.updateDocument(this.databaseId, this.ordersCollectionId, orderId, orderData)).pipe(
+      map(result => result as unknown as Order),
+      catchError(error => {
+        console.error('Error updating order:', error);
+        throw error;
+      })
+    );
   }
 
   // Delete an Order
-  async deleteOrder(orderId: string): Promise<any> {
-    try {
-      const result = await databases.deleteDocument(this.databaseId, this.ordersCollectionId, orderId);
-      return result;
-    } catch (error) {
-      console.error('Error deleting order:', error);
-      throw error;
-    }
+  deleteOrder(orderId: string): Observable<void> {
+    return from(databases.deleteDocument(this.databaseId, this.ordersCollectionId, orderId)).pipe(
+      map(() => undefined), // Mapping to void
+      catchError(error => {
+        console.error('Error deleting order:', error);
+        throw error;
+      })
+    );
   }
 }
