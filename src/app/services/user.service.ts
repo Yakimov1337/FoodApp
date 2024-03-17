@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { from, Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, from, Observable, throwError } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { Query } from 'appwrite';
 import { environment } from 'src/environments/environment.local';
-import { databases, ID } from '../core/lib/appwrite';
+import { account, databases, ID } from '../core/lib/appwrite';
 import { User } from '../core/models';
 
 @Injectable({
@@ -12,16 +12,25 @@ import { User } from '../core/models';
 export class UserService {
   private readonly databaseId = environment.appwriteDatabaseId;
   private readonly usersCollectionId = environment.userCollectionId;
+  private userCreatedSource = new BehaviorSubject<User | null>(null);
+  private userDeletedSource = new BehaviorSubject<string |undefined | null>(null);
 
-  createUser(user: Omit<User, '$id'>): Observable<User> {
-    return from(databases.createDocument(this.databaseId, this.usersCollectionId, ID.unique(), user)).pipe(
-      map((result) => result as unknown as User),
-      catchError((error) => {
-        console.error('Error saving user to database:', error);
-        return throwError(() => error);
-      }),
-    );
+  // Observable stream to be consumed by components
+  userCreated$ = this.userCreatedSource.asObservable();
+  userDeleted$ = this.userDeletedSource.asObservable();
+
+  constructor() {}
+  // Emit event when a user is created
+  userCreated(user: User): void {
+    this.userCreatedSource.next(user);
   }
+
+  // Emit event when a user is deleted
+  userDeleted(userId: string | undefined | null): void {
+    this.userDeletedSource.next(userId);
+  }
+
+  // Create USER is delegated to Auth service because we need to create Appwrite account too!
 
   getAllUsers(): Observable<User[]> {
     return from(databases.listDocuments(this.databaseId, this.usersCollectionId, [Query.limit(20)])).pipe(
@@ -53,8 +62,22 @@ export class UserService {
     );
   }
 
-  deleteUser(userId: string): Observable<any> {
-    return from(databases.deleteDocument(this.databaseId, this.usersCollectionId, userId)).pipe(
+  //Deleting user from both Appwrite Auth table and Custom Users table
+  deleteUser(documentId: string): Observable<any> {
+    // Step 1: Fetch the user document to get the accountId (Appwrite Auth ID)
+    return from(databases.getDocument(this.databaseId, this.usersCollectionId, documentId)).pipe(
+      switchMap((userDocument) => {
+        const accountId = userDocument['accountId'];
+
+        // Step 2: Delete the user from Appwrite Auth system using accountId
+        // const deleteAuthUser = from(account.deleteIdentity(accountId));
+
+        // Step 3: Delete the user document from my database
+        const deleteUserDocument = from(databases.deleteDocument(this.databaseId, this.usersCollectionId, documentId));
+
+        // Step 4: Execute both deletions in parallel and wait for both to complete
+        return forkJoin([deleteUserDocument]); //disabled deleteAuthUser for now
+      }),
       catchError((error) => {
         console.error('Error deleting user:', error);
         return throwError(() => error);
