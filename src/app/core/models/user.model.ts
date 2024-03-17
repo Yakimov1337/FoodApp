@@ -3,7 +3,8 @@ import { MenuItem } from './food-menu-item.model';
 import { Order } from './order.model';
 
 export interface User {
-  accountId: ID;
+  accountId: string;
+  $id?: string;
   name: string;
   email: string;
   imageUrl: URL;
