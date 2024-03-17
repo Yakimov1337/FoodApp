@@ -17,3 +17,13 @@ export const selectIsDeleteUserModalOpen = createSelector(
   selectModalState,
   (state: ModalState) => state.deleteUser
 );
+
+export const selectDeleteUserId = createSelector(
+  selectModalState,
+  (state: ModalState) => state.deleteUserId
+);
+
+export const selectEditingUser = createSelector(
+  selectModalState,
+  (state: ModalState) => state.editingUser
+);
