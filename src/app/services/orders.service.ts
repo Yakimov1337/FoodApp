@@ -19,7 +19,7 @@ export class OrdersService {
   // Observable stream to be consumed by components
   orderCreated$ = this.orderCreatedSource.asObservable();
   orderDeleted$ = this.orderDeletedSource.asObservable();
-  orderUpdated$ = this.orderDeletedSource.asObservable();
+  orderUpdated$ = this.orderUpdatedSource.asObservable();
 
   constructor() {}
   // Emit event when a order is created

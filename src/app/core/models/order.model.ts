@@ -4,7 +4,7 @@ import { User } from "./user.model";
 export interface Order {
   $id: string;
   user: User;
-  menuItem: MenuItem;
+  menuItems: MenuItem[];
   totalCost: number;
   createdOn: Date;
   status: 'pending' | 'completed' | 'cancelled';
