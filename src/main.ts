@@ -9,7 +9,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
-import { modalReducer } from './app/core/state/modal/modal.reducer';
+import { userModalReducer } from './app/core/state/modal/user/modal.reducer';
+import { orderModalReducer } from './app/core/state/modal/order/modal.reducer';
 
 if (environment.production) {
   enableProdMode();
@@ -18,9 +19,19 @@ if (environment.production) {
     selfXSSWarning();
   }
 }
+const initialReducers = {
+  userModals: userModalReducer,
+  orderModals: orderModalReducer
+};
 
 bootstrapApplication(AppComponent, {
-  providers: [importProvidersFrom(BrowserModule, AppRoutingModule), provideAnimations(), provideStore({ modals: modalReducer }), provideEffects(), provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() })],
+  providers: [
+    importProvidersFrom(BrowserModule, AppRoutingModule),
+    provideAnimations(),
+    provideStore(initialReducers),
+    provideEffects(),
+    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
+  ],
 }).catch((err) => console.error(err));
 
 function selfXSSWarning() {
