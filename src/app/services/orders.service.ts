@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, Observable } from 'rxjs';
+import { BehaviorSubject, from, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Query } from 'appwrite';
 import { environment } from 'src/environments/environment.local';
@@ -12,6 +12,30 @@ import { Order } from '../core/models';
 export class OrdersService {
   private readonly databaseId = environment.appwriteDatabaseId;
   private readonly ordersCollectionId = environment.ordersCollectionId;
+  private orderCreatedSource = new BehaviorSubject<Order | null>(null);
+  private orderUpdatedSource = new BehaviorSubject<Order | null>(null);
+  private orderDeletedSource = new BehaviorSubject<string |undefined | null>(null);
+
+  // Observable stream to be consumed by components
+  orderCreated$ = this.orderCreatedSource.asObservable();
+  orderDeleted$ = this.orderDeletedSource.asObservable();
+  orderUpdated$ = this.orderDeletedSource.asObservable();
+
+  constructor() {}
+  // Emit event when a order is created
+  orderCreated(order: Order): void {
+    this.orderCreatedSource.next(order);
+  }
+
+   // Emit event when a order is updated
+   orderUpdated(order: Order): void {
+    this.orderCreatedSource.next(order);
+  }
+
+  // Emit event when a order is deleted
+  orderDeleted(orderId: string | undefined | null): void {
+    this.orderDeletedSource.next(orderId);
+  }
 
   // Create an Order
   createOrder(orderData: Order): Observable<Order> {
