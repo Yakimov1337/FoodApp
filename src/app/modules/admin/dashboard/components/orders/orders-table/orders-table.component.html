@@ -4,10 +4,12 @@
       <h3 class="text-md font-bold text-foreground">Orders Live Data</h3>
       <span class="text-xs text-muted-foreground">Updated 3 minutes ago</span>
     </div>
-    <button
-      class="flex-none rounded-md bg-card px-4 py-2.5 text-xs font-semibold text-muted-foreground hover:bg-muted hover:text-foreground">
-      History
-    </button>
+    <app-button (click)="openCreateModal()" impact="light" tone="warning" shape="rounded" size="medium" class="text-white">
+      <div class="flex items-center justify-center space-x-2">
+        <span>Create</span>
+        <svg-icon src="assets/icons/heroicons/outline/edit.svg"></svg-icon>
+      </div>
+    </app-button>
   </div>
 
   <div class="relative overflow-x-auto">
@@ -22,7 +24,7 @@
           <th class="py-3 ">Status</th>
           <th class="py-3">Date</th>
           <th class="py-3">Cost $</th>
-          <th class="py-3">Dummy</th>
+          <th class="py-3">Buyer</th>
           <th class="py-3 text-end">Actions</th>
         </tr>
       </thead>
