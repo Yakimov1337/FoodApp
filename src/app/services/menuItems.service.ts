@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, Observable } from 'rxjs';
+import { BehaviorSubject, from, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { databases, ID } from '../core/lib/appwrite';
 import { MenuItem } from '../core/models';
@@ -12,6 +12,30 @@ import { Query } from 'appwrite';
 export class MenuItemsService {
   private readonly databaseId = environment.appwriteDatabaseId;
   private readonly MenuItemsCollectionId = environment.menuItemsCollectionId;
+  private menuItemCreatedSource = new BehaviorSubject<MenuItem | null>(null);
+  private menuItemUpdatedSource = new BehaviorSubject<MenuItem | null>(null);
+  private menuItemDeletedSource = new BehaviorSubject<string |undefined | null>(null);
+
+  // Observable stream to be consumed by components
+  menuItemCreated$ = this.menuItemCreatedSource.asObservable();
+  menuItemDeleted$ = this.menuItemDeletedSource.asObservable();
+  menuItemUpdated$ = this.menuItemUpdatedSource.asObservable();
+
+  constructor() {}
+  // Emit event when a order is created
+  menuItemCreated(menuItem: MenuItem): void {
+    this.menuItemCreatedSource.next(menuItem);
+  }
+
+   // Emit event when a order is updated
+   menuItemUpdated(menuItem: MenuItem): void {
+    this.menuItemCreatedSource.next(menuItem);
+  }
+
+  // Emit event when a order is deleted
+  menuItemDeleted(menuItemId: string | undefined | null): void {
+    this.menuItemDeletedSource.next(menuItemId);
+  }
 
   // Create an MenuItem
   createMenuItem(menuItemData: MenuItem): Observable<MenuItem> {
