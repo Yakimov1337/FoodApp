@@ -11,6 +11,7 @@ import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { userModalReducer } from './app/core/state/modal/user/modal.reducer';
 import { orderModalReducer } from './app/core/state/modal/order/modal.reducer';
+import { menuItemsModalReducer } from './app/core/state/modal/menuItem/modal.reducer';
 
 if (environment.production) {
   enableProdMode();
@@ -21,7 +22,8 @@ if (environment.production) {
 }
 const initialReducers = {
   userModals: userModalReducer,
-  orderModals: orderModalReducer
+  orderModals: orderModalReducer,
+  menuItemModals: menuItemsModalReducer,
 };
 
 bootstrapApplication(AppComponent, {
