@@ -1,0 +1,140 @@
+<!-- Main modal -->
+<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4"  (click)="closeModal()">">
+  <div class="relative max-h-full w-full max-w-md p-4">
+    <!-- Modal content -->
+    <div class="relative rounded-lg bg-white shadow dark:bg-gray-700" (click)="$event.stopPropagation()">
+      <!-- Modal header -->
+      <div class="flex items-center justify-between rounded-t border-b p-4 dark:border-gray-600 md:p-5">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Create New Order</h3>
+        <button
+          type="button"
+          (click)="closeModal()"
+          class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+          data-modal-toggle="crud-modal">
+          <svg class="h-3 w-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <form class="p-4 md:p-5" [formGroup]="orderForm" (ngSubmit)="createOrder()">
+        <div class="mb-4 grid grid-cols-2 gap-4">
+          <div class="col-span-2">
+            <label for="user" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">User Email</label>
+            <select
+              formControlName="user"
+              id="user"
+              class="focus:ring-primary-600 focus:border-primary-600 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400">
+              <option *ngFor="let user of users$ | async" [value]="user.$id">{{ user.email }}</option>
+            </select>
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <label for="status" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >Status <span class="text-red-500">*</span></label
+            >
+            <select
+              formControlName="status"
+              id="status"
+              class="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400">
+              <option value="pending">pending</option>
+              <option value="completed">completed</option>
+              <option value="cancelled">cancelled</option>
+            </select>
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <label for="createdOn" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >Created on</label
+            >
+            <input
+              formControlName="createdOn"
+              type="text"
+              id="createdOn"
+              class="focus:ring-primary-600 focus:border-primary-600 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400"
+              placeholder="Type order date" />
+          </div>
+          <div class="col-span-2">
+            <label for="totalCost" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >Total cost</label
+            >
+            <input
+              formControlName="totalCost"
+              type="tel"
+              id="totalCost"
+              class="focus:ring-primary-600 focus:border-primary-600 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400"
+              placeholder="Type order total cost" />
+          </div>
+          <div class="col-span-2">
+            <label for="menuItems" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >Menu Items</label
+            >
+            <div class="relative">
+              <button
+                type="button"
+                (click)="toggleDropdown()"
+                class="focus:ring-primary-500 inline-flex w-full justify-between rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
+                Select Menu Items
+                <svg
+                  class="ml-2 -mr-1 h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true">
+                  <path
+                    fill-rule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clip-rule="evenodd" />
+                </svg>
+              </button>
+              <div
+              *ngIf="dropdownOpen"
+                class="absolute z-10 mt-2 w-full rounded-md bg-white shadow-lg dark:bg-gray-700"
+                x-show="dropdownOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-75"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95">
+                <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                  <div class="max-h-60 overflow-auto" *ngFor="let menuItem of menuItems$ | async">
+                    <label class="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+                      <input
+                        type="checkbox"
+                        [value]="menuItem.$id"
+                        (change)="onMenuItemChange(menuItem.$id, $event)"
+                        class="text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-500 mr-2 h-4 w-4 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800" />
+                      {{ menuItem.title }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-span-2">
+            <button
+              type="submit"
+              class="inline-flex items-center rounded-lg bg-primary px-5 py-2.5 text-center text-sm font-medium text-white">
+              <svg
+                class="me-1 -ms-1 h-5 w-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  fill-rule="evenodd"
+                  d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              Add new order
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
