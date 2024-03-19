@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { from, Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { account, avatars, databases, ID } from '../core/lib/appwrite';
 import { environment } from 'src/environments/environment.local';
 import { User, Role } from '../core/models/user.model';
@@ -25,11 +25,11 @@ export class AuthService {
         console.error('Error creating user account:', error);
         return throwError(() => error);
       }),
-      map((newAccount) => {
+      switchMap((newAccount) => { // WAIT for saveUserToDB to complete
         if (!newAccount) throw new Error('Account creation failed');
         const avatarUrl = avatars.getInitials(user.email);
 
-        const newUser: User = { // This user might come from Create User Modal or Sign Up form (that is why we have user and newAccount)
+        const newUser: User = {
           accountId: newAccount.$id,
           name: user.name ?? '',
           phoneNumber: user.phoneNumber ?? '',
@@ -39,12 +39,15 @@ export class AuthService {
           orders: [],
           menuItems: [],
         };
-        this.saveUserToDB(newUser).subscribe();
-        return newUser;
+
+        return this.saveUserToDB(newUser); // Return the saveUserToDB observable
+      }),
+      catchError((error) => {
+        console.error('Error saving user to database:', error);
+        return throwError(() => error);
       }),
     );
   }
-
   // Save user details to the database
   private saveUserToDB(user: Omit<User, '$id'>): Observable<User> {
     return from(databases.createDocument(this.databaseId, this.usersCollectionId, ID.unique(), user)).pipe(
