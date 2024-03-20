@@ -85,12 +85,16 @@
               <label for="imageUrl" class="mr-2 block text-sm font-medium text-gray-900 dark:text-white"
                 >Image URL</label
               >
+
               <input
-                type="checkbox"
-                id="useDefaultImage"
-                formControlName="useDefaultImage"
-                class="border-gray-900 dark:border-white dark:bg-white" />
+              type="checkbox"
+              id="useDefaultImage"
+              formControlName="useDefaultImage"
+              class="border-gray-900 dark:border-white dark:bg-white" />
               <label for="useDefaultImage" class="ml-2 text-gray-900 dark:text-white">Use default image</label>
+            </div>
+            <div *ngIf="menuItemForm.get('imageUrl')?.errors?.['invalidUrl'] && menuItemForm.get('imageUrl')?.touched" class="text-red-500">
+              Must be a valid URL
             </div>
             <input
               formControlName="imageUrl"
