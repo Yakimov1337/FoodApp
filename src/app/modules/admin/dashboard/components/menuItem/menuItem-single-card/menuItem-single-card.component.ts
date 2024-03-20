@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MenuItem } from '../../../models/food-menu-item';
 import { NgStyle, CurrencyPipe } from '@angular/common';
+import { MenuItem } from '../../../../../../core/models';
 
 @Component({
     selector: '[menuItem-single-card]',
