@@ -4,7 +4,7 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
 import { Store } from '@ngrx/store';
 import { User } from '../../../../../../core/models';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
-import { openDeleteUserModal, openUpdateUserModal } from '../../../../../../core/state/modal/modal.actions';
+import { openDeleteUserModal, openUpdateUserModal } from '../../../../../../core/state/modal/user/modal.actions';
 @Component({
   selector: '[users-table-item]',
   templateUrl: './users-table-item.component.html',
