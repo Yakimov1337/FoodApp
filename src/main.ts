@@ -1,6 +1,5 @@
 import { enableProdMode, importProvidersFrom, isDevMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
 import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from './app/app-routing.module';
@@ -12,6 +11,7 @@ import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { userModalReducer } from './app/core/state/modal/user/modal.reducer';
 import { orderModalReducer } from './app/core/state/modal/order/modal.reducer';
 import { menuItemsModalReducer } from './app/core/state/modal/menuItem/modal.reducer';
+import { provideToastr } from 'ngx-toastr';
 
 if (environment.production) {
   enableProdMode();
@@ -29,6 +29,8 @@ const initialReducers = {
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(BrowserModule, AppRoutingModule),
+    provideAnimations(),
+    provideToastr(),
     provideAnimations(),
     provideStore(initialReducers),
     provideEffects(),
