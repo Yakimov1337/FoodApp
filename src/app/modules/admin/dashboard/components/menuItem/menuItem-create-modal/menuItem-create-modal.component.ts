@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { CommonModule } from '@angular/common';
 import { MenuItem } from '../../../../../../core/models';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { urlValidator } from '../../users/user-create-modal/url-validator';
+import { urlFormValidator } from '../../../../../../shared/validators/url-validator';
 import { MenuItemsService } from '../../../../../../services/menuItems.service';
 import { closeCreateMenuItemModal } from '../../../../../../core/state/modal/menuItem/modal.actions';
 import { ToastrService } from 'ngx-toastr';
@@ -30,7 +30,7 @@ export class MenuItemCreateModalComponent {
       title: ['', Validators.required],
       description: ['', Validators.required],
       price: [1, [Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
-      imageUrl: ['', [urlValidator()]],
+      imageUrl: ['', [urlFormValidator()]],
       useDefaultImage: [false],
     });
   }

@@ -7,7 +7,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { selectMenuItemToUpdate } from '../../../../../../core/state/modal/menuItem/modal.selectors';
 import { closeUpdateMenuItemModal } from '../../../../../../core/state/modal/menuItem/modal.actions';
 import { MenuItemsService } from '../../../../../../services/menuItems.service';
-import { urlValidator } from '../../users/user-create-modal/url-validator';
+import { urlFormValidator } from '../../../../../../shared/validators/url-validator';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -32,7 +32,7 @@ export class MenuItemUpdateModalComponent implements OnInit {
       title: ['', Validators.required],
       description: ['', Validators.required],
       price: [1, [Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
-      imageUrl: ['', [urlValidator()]],
+      imageUrl: ['', [urlFormValidator()]],
     });
 
     this.menuItems$ = this.menuItemsService.getAllMenuItems();
