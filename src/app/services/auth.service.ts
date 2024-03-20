@@ -4,6 +4,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 import { account, avatars, databases, ID } from '../core/lib/appwrite';
 import { environment } from 'src/environments/environment.local';
 import { User, Role } from '../core/models/user.model';
+import { isValidUrl } from '../shared/validators/url-validator';
 
 @Injectable({
   providedIn: 'root',
@@ -35,7 +36,7 @@ export class AuthService {
           phoneNumber: user.phoneNumber ?? '',
           email: newAccount.email,
           role: Role.Normal,
-          imageUrl: user.imageUrl ?? avatarUrl,
+          imageUrl: user.imageUrl && isValidUrl(user.imageUrl) ? user.imageUrl : avatarUrl,
           orders: [],
           menuItems: [],
         };
