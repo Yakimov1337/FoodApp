@@ -1,11 +1,11 @@
 import { Store } from '@ngrx/store';
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { UsersTableItemComponent } from '../users-table-item/users-table-item.component';
 import { CommonModule, NgFor } from '@angular/common';
 import { MenuItem, User } from '../../../../../../core/models';
 import { LoaderComponent } from '../../../../../../shared/components/loader/loader.component';
-import { openCreateUserModal } from '../../../../../../core/state/modal/modal.actions';
+import { openCreateUserModal } from '../../../../../../core/state/modal/user/modal.actions';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
 import { Subscription } from 'rxjs';
 import { UserService } from '../../../../../../services/user.service';
@@ -38,8 +38,12 @@ export class UsersTableComponent implements OnInit {
     });
     const userCreatedSub = this.userService.userCreated$.subscribe(user => {
       if (user) {
-        console.log('user reaload')
         this.loadUsers(); // Refetch users after a new user is created
+      }
+    });
+    const userUpdatedSub = this.userService.userUpdated$.subscribe(user => {
+      if (user) {
+        this.loadUsers(); // Refetch users after use update
       }
     });
     const userDeletedSub = this.userService.userDeleted$.subscribe((deletedUserId) => {
@@ -51,17 +55,18 @@ export class UsersTableComponent implements OnInit {
     // Store subscriptions
     this.subscriptions.add(subscription);
     this.subscriptions.add(userCreatedSub);
+    this.subscriptions.add(userUpdatedSub);
     this.subscriptions.add(userDeletedSub);
+
   }
 
   loadUsers(): void {
     this.isLoading = true;
     this.userService.getAllUsers().subscribe({
       next: (users) => {
-        console.log('Fetched users:', users); // Add this line
+        console.log('Fetched users:', users);
         this.users = users;
         this.isLoading = false;
-        // this.cdr.detectChanges() // Re-render children user table
       },
       error: (error) => {
         console.error('Error fetching Users:', error);
