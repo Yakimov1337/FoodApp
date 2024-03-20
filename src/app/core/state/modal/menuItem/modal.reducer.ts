@@ -22,7 +22,7 @@ export const menuItemsModalReducer = createReducer(
   initialState,
   on(ModalActions.openCreateMenuItemModal, state => ({ ...state, createMenuItem: true })),
   on(ModalActions.closeCreateMenuItemModal, state => ({ ...state, createMenuItem: false })),
-  on(ModalActions.openUpdateMenuItemModal, (state, { menuItem }) => ({ ...state, updateMenuItem: true, MenuItemToUpdate: menuItem })),
+  on(ModalActions.openUpdateMenuItemModal, (state, { menuItem }) => ({ ...state, updateMenuItem: true, menuItemToUpdate: menuItem })),
   on(ModalActions.closeUpdateMenuItemModal, state => ({ ...state, updateMenuItem: false})),
   on(ModalActions.openDeleteMenuItemModal, (state, { menuItemId }) => ({ ...state, deleteMenuItem: true, deleteMenuItemId: menuItemId })),
   on(ModalActions.closeDeleteMenuItemModal, state => ({ ...state, deleteMenuItem: false}))
