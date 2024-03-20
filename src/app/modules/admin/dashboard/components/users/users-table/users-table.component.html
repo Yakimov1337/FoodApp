@@ -23,8 +23,8 @@
           <th class="py-3 text-left">User ID</th>
           <th class="py-3">Name</th>
           <th class="py-3">Role</th>
-          <th class="py-3">Cost $</th>
           <th class="py-3">Phone</th>
+          <th class="py-3">Orders</th>
           <th class="py-3 text-end">Actions</th>
         </tr>
       </thead>
@@ -37,8 +37,8 @@
           [user]="user"
           class="border-b border-dashed border-border hover:bg-card"></tr>
       </tbody>
-
       <!--end::Table body-->
     </table>
+    <p *ngIf="!isLoading && users.length === 0" class="mx-auto p-12 text-center text-foreground">No items available</p>
   </div>
 </div>
