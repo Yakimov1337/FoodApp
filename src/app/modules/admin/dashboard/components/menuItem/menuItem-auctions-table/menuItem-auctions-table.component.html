@@ -4,10 +4,18 @@
       <h3 class="text-md font-bold text-foreground">Food menu items Live Data</h3>
       <span class="text-xs text-muted-foreground">Updated 3 minutes ago</span>
     </div>
-    <button
-      class="flex-none rounded-md bg-card px-4 py-2.5 text-xs font-semibold text-muted-foreground hover:bg-muted hover:text-foreground">
-      History
-    </button>
+    <app-button
+      (click)="openCreateModal()"
+      impact="light"
+      tone="warning"
+      shape="rounded"
+      size="medium"
+      class="text-white">
+      <div class="flex items-center justify-center space-x-2">
+        <span>Create</span>
+        <svg-icon src="assets/icons/heroicons/outline/edit.svg"></svg-icon>
+      </div>
+    </app-button>
   </div>
 
   <div class="relative overflow-x-auto">
@@ -19,10 +27,10 @@
       <thead class="border-b-2 text-xs uppercase text-muted-foreground">
         <tr>
           <th class="py-3 text-left">Title</th>
-          <th class="py-3">Price $</th>
+          <th class="py-3">Price</th>
           <th class="py-3">Sales</th>
           <th class="py-3">Category</th>
-          <th class="py-3">Dummy</th>
+          <th class="py-3">Default</th>
           <th class="py-3 text-end">Actions</th>
         </tr>
       </thead>
@@ -30,13 +38,15 @@
       <!--Table body-->
       <tbody>
         <tr
-          *ngFor="let item of items"
+          *ngFor="let menuItem of menuItems"
           menuItem-auctions-table-item
-          [item]="item"
+          [menuItem]="menuItem"
           class="border-b border-dashed border-border hover:bg-card"></tr>
       </tbody>
-
       <!--end::Table body-->
     </table>
+    <p *ngIf="!isLoading && menuItems.length === 0" class="mx-auto p-12 text-center text-foreground">
+      No items available
+    </p>
   </div>
 </div>

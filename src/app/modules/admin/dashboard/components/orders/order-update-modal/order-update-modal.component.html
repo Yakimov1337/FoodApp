@@ -27,7 +27,14 @@
         <div class="mb-4 grid grid-cols-2 gap-4">
           <!-- User Email Dropdown -->
           <div class="col-span-2">
-            <label for="user" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">User Email</label>
+            <label for="user" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >User Email<span class="text-red-500">*</span></label
+            >
+            <div
+              *ngIf="orderForm.get('user')?.errors?.['required'] && orderForm.get('user')?.touched"
+              class="text-red-500">
+              Email is required
+            </div>
             <select formControlName="user" id="user" class="block w-full rounded-lg border p-2.5">
               <option *ngFor="let user of users$ | async" [ngValue]="user.$id">{{ user.email }}</option>
             </select>
@@ -35,7 +42,9 @@
 
           <!-- Status Dropdown -->
           <div class="col-span-2 sm:col-span-1">
-            <label for="status" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Status</label>
+            <label for="status" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >Status<span class="text-red-500">*</span></label
+            >
             <select formControlName="status" id="status" class="block w-full rounded-lg border p-2.5">
               <option value="pending">Pending</option>
               <option value="completed">Completed</option>
@@ -61,6 +70,11 @@
             <label for="totalCost" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
               >Total cost</label
             >
+            <div
+              *ngIf="orderForm.get('totalCost')?.errors?.['required'] && orderForm.get('totalCost')?.touched"
+              class="text-red-500">
+              Total cost is required
+            </div>
             <input
               formControlName="totalCost"
               type="tel"
@@ -73,11 +87,10 @@
           <div class="col-span-2" formArrayName="menuItems">
             <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Menu Items</label>
             <div *ngFor="let menuItem of menuItems$ | async; let i = index">
-              <input type="checkbox" [formControlName]="i"/>
+              <input type="checkbox" [formControlName]="i" />
               {{ menuItem.title }}
             </div>
           </div>
-
 
           <!-- Submit Button -->
           <div class="col-span-2">
