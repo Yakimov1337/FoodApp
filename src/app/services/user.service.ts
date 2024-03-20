@@ -3,7 +3,7 @@ import { BehaviorSubject, forkJoin, from, Observable, throwError } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { Query } from 'appwrite';
 import { environment } from 'src/environments/environment.local';
-import { account, databases, ID } from '../core/lib/appwrite';
+import { databases } from '../core/lib/appwrite';
 import { User } from '../core/models';
 
 @Injectable({
@@ -13,16 +13,23 @@ export class UserService {
   private readonly databaseId = environment.appwriteDatabaseId;
   private readonly usersCollectionId = environment.userCollectionId;
   private userCreatedSource = new BehaviorSubject<User | null>(null);
-  private userDeletedSource = new BehaviorSubject<string |undefined | null>(null);
+  private userUpdatedSource = new BehaviorSubject<User | null>(null);
+  private userDeletedSource = new BehaviorSubject<string | undefined | null>(null);
 
   // Observable stream to be consumed by components
   userCreated$ = this.userCreatedSource.asObservable();
+  userUpdated$ = this.userUpdatedSource.asObservable();
   userDeleted$ = this.userDeletedSource.asObservable();
 
   constructor() {}
   // Emit event when a user is created
   userCreated(user: User): void {
     this.userCreatedSource.next(user);
+  }
+
+  // Emit event when a user is updated
+  userUpdated(user: User): void {
+    this.userUpdatedSource.next(user);
   }
 
   // Emit event when a user is deleted
@@ -70,7 +77,7 @@ export class UserService {
         const accountId = userDocument['accountId'];
 
         // Step 2: Delete the user from Appwrite Auth system using accountId
-        // const deleteAuthUser = from(account.deleteIdentity(accountId));
+        // const deleteAuthUser = from(account.deleteIdentity('65f8c54fd490d9cb9031'));
 
         // Step 3: Delete the user document from my database
         const deleteUserDocument = from(databases.deleteDocument(this.databaseId, this.usersCollectionId, documentId));
