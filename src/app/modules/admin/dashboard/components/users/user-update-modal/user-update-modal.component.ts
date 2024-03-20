@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { User } from '../../../../../../core/models';
 import { UserService } from '../../../../../../services/user.service';
-import { selectIsUpdateUserModalOpen } from '../../../../../../core/state/modal/modal.selectors';
-import { closeUpdateUserModal } from '../../../../../../core/state/modal/modal.actions';
+import { closeUpdateUserModal } from '../../../../../../core/state/modal/user/modal.actions';
+import { ToastrService } from 'ngx-toastr';
+import { selectUserToUpdate } from '../../../../../../core/state/modal/user/modal.selectors';
+import { urlFormValidator } from '../../../../../../shared/validators/url-validator';
 
 @Component({
   selector: '[user-update-modal]',
@@ -15,30 +17,64 @@ import { closeUpdateUserModal } from '../../../../../../core/state/modal/modal.a
 })
 export class UserUpdateModalComponent {
   userForm: FormGroup;
-  showUpdateModal$ = this.store.select(selectIsUpdateUserModalOpen);
-
-  constructor(private fb: FormBuilder, private userService: UserService, private store: Store) {
+  private currentUserId: string | undefined | null = null;
+  get emailControl(): FormControl {
+    const email = this.userForm.get('email');
+    if (!email) {
+      throw new Error('Email FormControl is not found in the form group');
+    }
+    return email as FormControl;
+  }
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+    private store: Store,
+    private toastr: ToastrService,
+  ) {
     this.userForm = this.fb.group({
+      email: new FormControl({ value: '', disabled: true }),
       name: [''],
-      email: ['', [Validators.required, Validators.email]],
       role: ['Normal', Validators.required],
       phoneNumber: [''],
-      imageUrl: [''],
+      imageUrl: ['', urlFormValidator()],
     });
   }
 
-  // Function to handle form submission
+  ngOnInit(): void {
+    this.store.select(selectUserToUpdate).subscribe((user) => {
+      console.log(user);
+      if (user) {
+        this.currentUserId = user.$id;
+        this.userForm.patchValue({
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          phoneNumber: user.phoneNumber,
+          imageUrl: user.imageUrl,
+        });
+      }
+    });
+  }
+
   updateUser(): void {
-    if (this.userForm.valid) {
-      this.userService.updateUser('123', this.userForm.value).subscribe({
-        next: (user: User) => {
-          // Handle success (e.g., close modal, refresh list)
-          console.log('User created successfully', user);
+    if (this.userForm.valid && this.currentUserId) {
+      this.userService.updateUser(this.currentUserId, this.userForm.value).subscribe({
+        next: (user) => {
+          this.closeModal();
+          this.userService.userUpdated(user); //Notify about user update
+          this.toastr.success('User updated successfully!');
         },
-        error: (error: Error) => {
-          // Handle error
-          console.error('Error creating user', error);
-        },
+        error: (error) => this.toastr.error('Error updating this user:', error),
+      });
+    } else {
+      this.userForm.markAllAsTouched();
+      // If the form is invalid, iterate over the controls and log the errors
+      Object.keys(this.userForm.controls).forEach((key) => {
+        const control = this.userForm.get(key);
+        const errors = control?.errors ?? {};
+        Object.keys(errors).forEach((keyError) => {
+          this.toastr.error(`Form Invalid - control: ${key}, Error: ${keyError}`);
+        });
       });
     }
   }

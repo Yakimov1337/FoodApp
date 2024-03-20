@@ -1,11 +1,11 @@
+import { Subscription } from 'rxjs';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../../../../../services/user.service';
-import { selectDeleteUserId, selectIsDeleteUserModalOpen } from '../../../../../../core/state/modal/modal.selectors';
-import { closeDeleteUserModal } from '../../../../../../core/state/modal/modal.actions';
-import { Subscription } from 'rxjs';
-
+import { selectDeleteUserId } from '../../../../../../core/state/modal/user/modal.selectors';
+import { closeDeleteUserModal } from '../../../../../../core/state/modal/user/modal.actions';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: '[user-delete-modal]',
   standalone: true,
@@ -13,17 +13,18 @@ import { Subscription } from 'rxjs';
   templateUrl: './user-delete-modal.component.html',
 })
 export class UserDeleteModalComponent {
-  showDeleteModal$ = this.store.select(selectIsDeleteUserModalOpen);
   userIdToDelete: string | undefined | null = null;
   private subscription = new Subscription();
 
-  constructor(private store: Store, private userService: UserService) {
-    this.subscription.add(this.store.select(selectDeleteUserId).subscribe(userId => {
-      this.userIdToDelete = userId;
-    }));
+  constructor(private store: Store, private userService: UserService, private toastr: ToastrService) {
+    this.subscription.add(
+      this.store.select(selectDeleteUserId).subscribe((userId) => {
+        this.userIdToDelete = userId;
+      }),
+    );
   }
   ngOnInit(): void {
-console.log(this.userIdToDelete)
+    console.log(this.userIdToDelete);
   }
 
   deleteUser(): void {
@@ -33,13 +34,11 @@ console.log(this.userIdToDelete)
     }
     this.userService.deleteUser(this.userIdToDelete).subscribe({
       next: () => {
-        console.log(`User with ID ${this.userIdToDelete} deleted successfully.`);
+        this.toastr.success(`User with ID ${this.userIdToDelete} deleted successfully.`);
         this.closeModal();
         this.userService.userDeleted(this.userIdToDelete);
       },
-      error: (error) => {
-        console.error('Error deleting user:', error);
-      },
+      error: (error) =>  this.toastr.error('Error ocurred while deleting this user!')
     });
   }
 
