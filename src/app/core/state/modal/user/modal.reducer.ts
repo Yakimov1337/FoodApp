@@ -7,7 +7,7 @@ export interface ModalState {
   updateUser: boolean;
   deleteUser: boolean;
   deleteUserId: string | null | undefined;
-  editingUser: User | null;
+  userToUpdate: User | null;
 }
 
 export const initialState: ModalState = {
@@ -15,14 +15,14 @@ export const initialState: ModalState = {
   updateUser: false,
   deleteUser: false,
   deleteUserId: null,
-  editingUser: null,
+  userToUpdate: null,
 };
 
 export const userModalReducer = createReducer(
   initialState,
   on(ModalActions.openCreateUserModal, state => ({ ...state, createUser: true })),
   on(ModalActions.closeCreateUserModal, state => ({ ...state, createUser: false })),
-  on(ModalActions.openUpdateUserModal, (state, { user }) => ({ ...state, updateUser: true, editingUser: user })),
+  on(ModalActions.openUpdateUserModal, (state, { user }) => ({ ...state, updateUser: true, userToUpdate: user })),
   on(ModalActions.closeUpdateUserModal, state => ({ ...state, updateUser: false})),
   on(ModalActions.openDeleteUserModal, (state, { userId }) => ({ ...state, deleteUser: true, deleteUserId: userId })),
   on(ModalActions.closeDeleteUserModal, state => ({ ...state, deleteUser: false}))

@@ -23,7 +23,7 @@ export const selectDeleteUserId = createSelector(
   (state: ModalState) => state.deleteUserId
 );
 
-export const selectEditingUser = createSelector(
+export const selectUserToUpdate = createSelector(
   selectUserModalState,
-  (state: ModalState) => state.editingUser
+  (state: ModalState) => state.userToUpdate
 );
