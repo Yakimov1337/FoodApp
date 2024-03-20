@@ -9,6 +9,8 @@ import { OrdersService } from '../../../../../../services/orders.service';
 import { MenuItemsService } from '../../../../../../services/menuItems.service';
 import { UserService } from '../../../../../../services/user.service';
 import { CommonModule, formatDate } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
+import { asyncSimpleDateValidator } from '../../../../../../shared/validators/date-format-validator';
 
 @Component({
   selector: '[order-update-modal]',
@@ -28,6 +30,7 @@ export class OrderUpdateModalComponent implements OnInit {
     private ordersService: OrdersService,
     private userService: UserService,
     private menuItemsService: MenuItemsService,
+    private toastr: ToastrService,
   ) {
     // Initialize the form with structure
     this.orderForm = this.fb.group({
@@ -43,7 +46,6 @@ export class OrderUpdateModalComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Subscribe to the current order to update
     this.store.select(selectOrderToUpdate).subscribe((order) => {
       if (order) {
         this.currentOrderId = order.$id;
@@ -55,59 +57,32 @@ export class OrderUpdateModalComponent implements OnInit {
           createdOn: formattedCreatedOn,
           status: order.status,
         });
-
-        // Populate menu items
-        this.populateMenuItemsFormArray(order.menuItems);
       }
     });
   }
 
   updateOrder(): void {
     if (this.orderForm.valid && this.currentOrderId) {
-      const selectedMenuItems = this.getSelectedMenuItemsIds();
-      const updateValue = {
-        ...this.orderForm.value,
-        menuItems: selectedMenuItems,
-        $id: this.currentOrderId,
-      };
-      this.ordersService.updateOrder(this.currentOrderId, updateValue).subscribe({
+      this.ordersService.updateOrder(this.currentOrderId, this.orderForm.value).subscribe({
         next: (order) => {
-          console.log('Order updated successfully.');
-          this.ordersService.orderCreated(order);
           this.closeModal();
+          this.ordersService.orderCreated(order); //Notify about order update
+          this.toastr.success('Order updated successfully!');
         },
-        error: (error) => console.error('Error updating order:', error),
+        error: (error) => this.toastr.error('Error updating this order:', error),
+      });
+    } else {
+      this.orderForm.markAllAsTouched();
+      // If the form is invalid, iterate over the controls and log the errors
+      Object.keys(this.orderForm.controls).forEach((key) => {
+        const control = this.orderForm.get(key);
+        const errors = control?.errors ?? {};
+        Object.keys(errors).forEach((keyError) => {
+          this.toastr.error(`Form Invalid - control: ${key}, Error: ${keyError}`);
+        });
       });
     }
   }
-
-  getSelectedMenuItemsIds(): string[] {
-    const selectedIds: string[] = [];
-    (this.orderForm.get('menuItems') as FormArray).controls.forEach((control, index) => {
-      if (control.value) {
-        this.menuItems$.subscribe((menuItems) => {
-          const menuItem = menuItems[index];
-          selectedIds.push(menuItem.$id);
-        });
-      }
-    });
-    return selectedIds;
-  }
-
-  populateMenuItemsFormArray(menuItems: MenuItem[]): void {
-    const menuItemsControl = this.orderForm.get('menuItems') as FormArray;
-    menuItemsControl.clear(); // Clear existing controls
-
-    // Subscribe to all available menu items to determine which ones are selected
-    this.menuItems$.subscribe(allMenuItems => {
-      allMenuItems.forEach(menuItem => {
-        // Check if the current menuItem is selected in the order
-        const isSelected = menuItems.some(selectedItem => selectedItem.$id === menuItem.$id);
-        menuItemsControl.push(this.fb.control(isSelected));
-      });
-    });
-  }
-
 
   closeModal(): void {
     this.store.dispatch(closeUpdateOrderModal());

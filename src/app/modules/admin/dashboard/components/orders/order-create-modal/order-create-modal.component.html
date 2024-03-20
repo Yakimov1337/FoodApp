@@ -1,5 +1,6 @@
 <!-- Main modal -->
-<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4"  (click)="closeModal()">">
+<div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4" (click)="closeModal()">
+  ">
   <div class="relative max-h-full w-full max-w-md p-4">
     <!-- Modal content -->
     <div class="relative rounded-lg bg-white shadow dark:bg-gray-700" (click)="$event.stopPropagation()">
@@ -26,7 +27,12 @@
       <form class="p-4 md:p-5" [formGroup]="orderForm" (ngSubmit)="createOrder()">
         <div class="mb-4 grid grid-cols-2 gap-4">
           <div class="col-span-2">
-            <label for="user" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">User Email</label>
+            <label for="user" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">User Email<span class="text-red-500">*</span></label>
+            <div
+              *ngIf="orderForm.get('user')?.errors?.['required'] && orderForm.get('user')?.touched"
+              class="text-red-500">
+              Email is required
+            </div>
             <select
               formControlName="user"
               id="user"
@@ -76,7 +82,6 @@
             <div class="relative">
               <button
                 type="button"
-                (click)="toggleDropdown()"
                 class="focus:ring-primary-500 inline-flex w-full justify-between rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
                 Select Menu Items
                 <svg
@@ -91,29 +96,6 @@
                     clip-rule="evenodd" />
                 </svg>
               </button>
-              <div
-              *ngIf="dropdownOpen"
-                class="absolute z-10 mt-2 w-full rounded-md bg-white shadow-lg dark:bg-gray-700"
-                x-show="dropdownOpen"
-                x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0 scale-95"
-                x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-75"
-                x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-0 scale-95">
-                <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
-                  <div class="max-h-60 overflow-auto" *ngFor="let menuItem of menuItems$ | async">
-                    <label class="flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-600">
-                      <input
-                        type="checkbox"
-                        [value]="menuItem.$id"
-                        (change)="onMenuItemChange(menuItem.$id, $event)"
-                        class="text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-500 mr-2 h-4 w-4 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800" />
-                      {{ menuItem.title }}
-                    </label>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
           <div class="col-span-2">

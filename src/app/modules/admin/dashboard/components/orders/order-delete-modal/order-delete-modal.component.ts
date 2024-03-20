@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { selectDeleteOrderId } from '../../../../../../core/state/modal/order/modal.selectors';
 import { closeDeleteOrderModal } from '../../../../../../core/state/modal/order/modal.actions';
 import { OrdersService } from '../../../../../../services/orders.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: '[order-delete-modal]',
@@ -16,7 +17,7 @@ export class OrderDeleteModalComponent {
   orderIdToDelete: string | undefined | null = null;
   private subscription = new Subscription();
 
-  constructor(private store: Store, private ordersService: OrdersService) {
+  constructor(private store: Store, private ordersService: OrdersService, private toastr: ToastrService) {
     this.subscription.add(
       this.store.select(selectDeleteOrderId).subscribe((orderId) => {
         this.orderIdToDelete = orderId;
@@ -29,18 +30,16 @@ export class OrderDeleteModalComponent {
 
   deleteOrder(): void {
     if (!this.orderIdToDelete) {
-      console.error('No order ID provided for deletion.');
+      this.toastr.error('No order ID to delete provided!');
       return;
     }
     this.ordersService.deleteOrder(this.orderIdToDelete).subscribe({
       next: () => {
-        console.log(`order with ID ${this.orderIdToDelete} deleted successfully.`);
         this.closeModal();
-        this.ordersService.orderDeleted(this.orderIdToDelete);
+        this.ordersService.orderDeleted(this.orderIdToDelete); //Notify about deletion
+        this.toastr.success(`Order with ID ${this.orderIdToDelete} deleted successfully!`);
       },
-      error: (error) => {
-        console.error('Error deleting order:', error);
-      },
+      error: (error) => this.toastr.error('Error deleting order:', error)
     });
   }
 

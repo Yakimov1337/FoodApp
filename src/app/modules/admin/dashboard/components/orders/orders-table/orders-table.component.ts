@@ -11,11 +11,20 @@ import { ButtonComponent } from '../../../../../../shared/components/button/butt
 import { openCreateOrderModal } from '../../../../../../core/state/modal/order/modal.actions';
 import { OrderCreateModalComponent } from '../order-create-modal/order-create-modal.component';
 import { selectIsCreateOrderModalOpen } from '../../../../../../core/state/modal/order/modal.selectors';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: '[orders-table]',
   templateUrl: './orders-table.component.html',
   standalone: true,
-  imports: [NgFor, OrdersTableItemComponent, OrderCreateModalComponent, CommonModule, LoaderComponent, AngularSvgIconModule, ButtonComponent],
+  imports: [
+    NgFor,
+    OrdersTableItemComponent,
+    OrderCreateModalComponent,
+    CommonModule,
+    LoaderComponent,
+    AngularSvgIconModule,
+    ButtonComponent,
+  ],
 })
 export class OrdersTableComponent implements OnInit {
   public orders: Order[] = [];
@@ -23,7 +32,7 @@ export class OrdersTableComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   showCreateOrderModal$ = this.store.select(selectIsCreateOrderModalOpen);
 
-  constructor(private ordersService: OrdersService, private store: Store) {}
+  constructor(private ordersService: OrdersService, private store: Store, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     //Fetch orders
@@ -33,11 +42,11 @@ export class OrdersTableComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error fetching Orders:', error);
+        this.toastr.error('Error fetching orders', error);
         this.isLoading = false;
       },
     });
-    const userCreatedSub = this.ordersService.orderCreated$.subscribe((order) => {
+    const orderCreatedSub = this.ordersService.orderCreated$.subscribe((order) => {
       if (order) {
         this.reloadOrders(); // Refetch orders after a new order is created
       }
@@ -47,7 +56,7 @@ export class OrdersTableComponent implements OnInit {
         this.orders = this.orders.filter((order) => order.$id !== deletedOrderId);
       }
     });
-    this.subscriptions.add(userCreatedSub);
+    this.subscriptions.add(orderCreatedSub);
     this.subscriptions.add(orderDeletedSub);
     this.subscriptions.add(ordersSub);
   }
@@ -61,7 +70,7 @@ export class OrdersTableComponent implements OnInit {
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error fetching Users:', error);
+        this.toastr.error('Error fetching Orders',error)
         this.isLoading = false;
       },
     });

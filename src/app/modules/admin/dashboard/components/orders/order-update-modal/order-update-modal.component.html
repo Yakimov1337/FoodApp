@@ -5,7 +5,7 @@
     <div class="relative rounded-lg bg-white shadow dark:bg-gray-700" (click)="$event.stopPropagation()">
       <!-- Modal header -->
       <div class="flex items-center justify-between rounded-t border-b p-4 dark:border-gray-600 md:p-5">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Create New Order</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Update Order</h3>
         <button
           type="button"
           (click)="closeModal()"
@@ -55,14 +55,17 @@
           <!-- Created On Input -->
           <div class="col-span-2 sm:col-span-1">
             <label for="createdOn" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >Created on</label
+              >Created on<span class="text-red-500">*</span></label
             >
+            <div *ngIf="orderForm.get('createdOn')?.errors?.['required']" class="text-red-500">
+              Date is required.
+            </div>
             <input
               formControlName="createdOn"
               type="text"
               id="createdOn"
               class="block w-full rounded-lg border p-2.5"
-              placeholder="Type order date" />
+              placeholder="YYYY-MM-DD" />
           </div>
 
           <!-- Total Cost Input -->
@@ -81,15 +84,6 @@
               id="totalCost"
               class="block w-full rounded-lg border p-2.5"
               placeholder="Type order total cost" />
-          </div>
-
-          <!-- Menu Items (Dynamic Checkboxes) -->
-          <div class="col-span-2" formArrayName="menuItems">
-            <label class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Menu Items</label>
-            <div *ngFor="let menuItem of menuItems$ | async; let i = index">
-              <input type="checkbox" [formControlName]="i" />
-              {{ menuItem.title }}
-            </div>
           </div>
 
           <!-- Submit Button -->
