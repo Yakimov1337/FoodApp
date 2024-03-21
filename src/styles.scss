@@ -160,6 +160,26 @@
     padding-right: 0.5rem;
   }
 }
+/* Add this to your styles.css or the component-specific CSS file */
+.error-message {
+  transition: opacity 0.3s ease-in-out;
+  height: 18px; /* Example height, adjust as needed */
+  visibility: hidden;
+  opacity: 0;
+  color: #f87171; /* Tailwind's red-500 */
+  font-size: 0.875rem; /* Tailwind's text-sm */
+  margin-top: 0.25rem; /* Tailwind's mt-1 */
+}
+
+.error-message.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.button-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 /** Plugins **/
 @import './assets/styles/apexchart.scss';
