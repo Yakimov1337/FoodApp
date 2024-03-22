@@ -39,8 +39,15 @@ export class UserService {
 
   // Create USER is delegated to Auth service because we need to create Appwrite account too!
 
-  getAllUsers(): Observable<User[]> {
-    return from(databases.listDocuments(this.databaseId, this.usersCollectionId, [Query.limit(20)])).pipe(
+  getAllUsers(page: number = 1, limit: number = 10): Observable<User[]> {
+    const offset = (page - 1) * limit;
+    return from(
+      databases.listDocuments(this.databaseId, this.usersCollectionId, [
+        Query.limit(limit),
+        Query.offset(offset),
+        // Query.orderDesc('createdAt'),
+      ]),
+    ).pipe(
       map((result) => result.documents as unknown as User[]),
       catchError((error) => {
         console.error('Error fetching users:', error);
