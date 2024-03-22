@@ -5,6 +5,7 @@ import { account, avatars, databases, ID } from '../core/lib/appwrite';
 import { environment } from 'src/environments/environment.local';
 import { User, Role } from '../core/models/user.model';
 import { isValidUrl } from '../shared/validators/url-validator';
+import { Query } from 'appwrite';
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +27,8 @@ export class AuthService {
         console.error('Error creating user account:', error);
         return throwError(() => error);
       }),
-      switchMap((newAccount) => { // WAIT for saveUserToDB to complete
+      switchMap((newAccount) => {
+        // WAIT for saveUserToDB to complete
         if (!newAccount) throw new Error('Account creation failed');
         const avatarUrl = avatars.getInitials(user.email);
 
@@ -57,6 +59,37 @@ export class AuthService {
         return throwError(() => error);
       }),
       map((newUser) => newUser as unknown as User),
+    );
+  }
+
+  // ============================== GET ACCOUNT
+  getCurrentUserSession(): Observable<User> {
+    return from(account.get()).pipe(
+      catchError((error) => {
+        return throwError(() => new Error('Failed to get Appwrite account'));
+      }),
+      switchMap((currentAccount) => {
+        if (!currentAccount) {
+          return throwError(() => new Error('No current account found'));
+        }
+        // Now fetch the user details from your users collection
+        return from(
+          databases.listDocuments(environment.appwriteDatabaseId, environment.userCollectionId, [
+            Query.equal('accountId', currentAccount.$id),
+          ]),
+        ).pipe(
+          map((response) => {
+            if (response.documents.length === 0) {
+              throw new Error('User not found in custom users collection');
+            }
+            return response.documents[0] as unknown as User; // Returns custom users table instead of Appwrite user
+          }),
+          catchError((error) => {
+            console.error('Error fetching user from users collection:', error);
+            return throwError(() => new Error('Failed to fetch user from users collection'));
+          }),
+        );
+      }),
     );
   }
 
