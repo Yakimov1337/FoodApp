@@ -1,5 +1,4 @@
-import { enableProdMode, importProvidersFrom, isDevMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { APP_INITIALIZER, enableProdMode, importProvidersFrom, isDevMode } from '@angular/core';
 import { environment } from './environments/environment';
 import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from './app/app-routing.module';
@@ -12,6 +11,9 @@ import { userModalReducer } from './app/core/state/modal/user/modal.reducer';
 import { orderModalReducer } from './app/core/state/modal/order/modal.reducer';
 import { menuItemsModalReducer } from './app/core/state/modal/menuItem/modal.reducer';
 import { provideToastr } from 'ngx-toastr';
+import { AuthStateService } from './app/services/auth-state.service';
+import { authReducer } from './app/core/state/auth/auth.reducer';
+import { AuthEffects } from './app/core/state/auth/auth.effects';
 
 if (environment.production) {
   enableProdMode();
@@ -20,10 +22,17 @@ if (environment.production) {
     selfXSSWarning();
   }
 }
+export function initializeApp(authStateService: AuthStateService) {
+  return (): Promise<void> => {
+    return authStateService.initializeAuthState();
+  };
+}
+
 const initialReducers = {
   userModals: userModalReducer,
   orderModals: orderModalReducer,
   menuItemModals: menuItemsModalReducer,
+  auth: authReducer,
 };
 
 bootstrapApplication(AppComponent, {
@@ -33,8 +42,14 @@ bootstrapApplication(AppComponent, {
     provideToastr(),
     provideAnimations(),
     provideStore(initialReducers),
-    provideEffects(),
+    provideEffects([AuthEffects]),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (authStateService: AuthStateService) => () => authStateService.initializeAuthState(),
+      deps: [AuthStateService],
+      multi: true
+    }
   ],
 }).catch((err) => console.error(err));
 
