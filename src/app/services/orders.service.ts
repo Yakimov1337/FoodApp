@@ -14,7 +14,7 @@ export class OrdersService {
   private readonly ordersCollectionId = environment.ordersCollectionId;
   private orderCreatedSource = new BehaviorSubject<Order | null>(null);
   private orderUpdatedSource = new BehaviorSubject<Order | null>(null);
-  private orderDeletedSource = new BehaviorSubject<string |undefined | null>(null);
+  private orderDeletedSource = new BehaviorSubject<string | undefined | null>(null);
 
   // Observable stream to be consumed by components
   orderCreated$ = this.orderCreatedSource.asObservable();
@@ -27,8 +27,8 @@ export class OrdersService {
     this.orderCreatedSource.next(order);
   }
 
-   // Emit event when a order is updated
-   orderUpdated(order: Order): void {
+  // Emit event when a order is updated
+  orderUpdated(order: Order): void {
     this.orderCreatedSource.next(order);
   }
 
@@ -40,47 +40,54 @@ export class OrdersService {
   // Create an Order
   createOrder(orderData: Order): Observable<Order> {
     return from(databases.createDocument(this.databaseId, this.ordersCollectionId, ID.unique(), orderData)).pipe(
-      map(result => result as unknown as Order),
-      catchError(error => {
+      map((result) => result as unknown as Order),
+      catchError((error) => {
         console.error('Error creating order:', error);
         throw error;
-      })
+      }),
     );
   }
 
   // Get all Orders
-  getAllOrders(): Observable<Order[]> {
-    return from(databases.listDocuments(this.databaseId, this.ordersCollectionId, [Query.orderDesc("$createdAt"), Query.limit(20)])).pipe(
-      map(result => {
+  getAllOrders(page: number = 1, limit: number = 10): Observable<Order[]> {
+    const offset = (page - 1) * limit;
+    return from(
+      databases.listDocuments(this.databaseId, this.ordersCollectionId, [
+        Query.limit(limit),
+        Query.offset(offset),
+        Query.orderDesc('createdOn'),
+      ]),
+    ).pipe(
+      map((result) => {
         if (!result) throw new Error('No result');
         return result.documents as unknown as Order[];
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Error fetching orders:', error);
         throw error;
-      })
+      }),
     );
   }
 
   // Get a single Order by ID
   getOrderById(orderId: string): Observable<Order> {
     return from(databases.getDocument(this.databaseId, this.ordersCollectionId, orderId)).pipe(
-      map(result => result as unknown as Order),
-      catchError(error => {
+      map((result) => result as unknown as Order),
+      catchError((error) => {
         console.error('Error fetching order:', error);
         throw error;
-      })
+      }),
     );
   }
 
   // Update an Order
   updateOrder(orderId: string, orderData: Partial<Order>): Observable<Order> {
     return from(databases.updateDocument(this.databaseId, this.ordersCollectionId, orderId, orderData)).pipe(
-      map(result => result as unknown as Order),
-      catchError(error => {
+      map((result) => result as unknown as Order),
+      catchError((error) => {
         console.error('Error updating order:', error);
         throw error;
-      })
+      }),
     );
   }
 
@@ -88,10 +95,10 @@ export class OrdersService {
   deleteOrder(orderId: string): Observable<void> {
     return from(databases.deleteDocument(this.databaseId, this.ordersCollectionId, orderId)).pipe(
       map(() => undefined), // Mapping to void
-      catchError(error => {
+      catchError((error) => {
         console.error('Error deleting order:', error);
         throw error;
-      })
+      }),
     );
   }
 }
