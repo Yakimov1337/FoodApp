@@ -24,7 +24,7 @@ export class AuthStateService {
           if (user) {
             this.store.dispatch(AuthActions.restoreSessionSuccess({ user: user as unknown as User }));
           } else {
-            this.store.dispatch(AuthActions.logout());
+            // this.store.dispatch(AuthActions.logout());
           }
           resolve();
         },
@@ -38,8 +38,18 @@ export class AuthStateService {
     return cookieFallback !== null && cookieFallback !== '[]';
   }
 
+  // Checks if the user is authenticated
   isAuthenticated(): Observable<boolean> {
-    // Directly select the authentication state from the store
+    // First, check if the token exists in localStorage
+    const tokenExists = this.checkAuthFallback();
+
+    if (!tokenExists) {
+      // If the token doesn't exist, dispatch a logout action to update the state
+      // this.store.dispatch(AuthActions.logout());
+      return of(false);
+    }
+
+    // If the token exists, then proceed to check the NgRx store for the authentication state
     return this.store.select(selectIsAuthenticated);
   }
 
