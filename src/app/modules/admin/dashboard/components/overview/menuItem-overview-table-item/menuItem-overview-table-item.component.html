@@ -1,0 +1,21 @@
+<td class="py-2 pr-2">
+  <div class="flex items-center">
+    <img [src]="menuItem.imageUrl" class="mr-2 h-10 w-10 flex-none rounded-full" alt="" />
+    <div class="min-w-0 flex flex-col justify-items-start">
+      <a href="#" class="mb-1 text-sm font-semibold text-foreground truncate">{{ menuItem.title }}</a>
+      <span class="text-xs font-semibold text-muted-foreground/50 truncate">{{ menuItem.price | currency }}</span>
+    </div>
+  </div>
+</td>
+<td class="py-2  text-center">
+  <span class="text-sm font-semibold text-muted-foreground">{{ menuItem.price }}</span>
+</td>
+<td class="py-2  text-center">
+  <span class="text-sm font-semibold text-muted-foreground">{{ menuItem.price | currency }}</span>
+</td>
+<td class="py-2  text-center">
+  <span class="text-sm font-semibold text-muted-foreground">{{ menuItem.price }}</span>
+</td>
+<td class="py-2  text-center">
+  <span class="text-sm font-semibold text-muted-foreground">{{ menuItem.price }}</span>
+</td>

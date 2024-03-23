@@ -4,12 +4,13 @@ import { ThemeService } from 'src/app/services/theme.service';
 import { ChartOptions } from '../../../../../../shared/models/chart-options';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: '[menuItem-chart-card]',
   templateUrl: './menuItem-chart-card.component.html',
   standalone: true,
-  imports: [AngularSvgIconModule, NgApexchartsModule],
+  imports: [AngularSvgIconModule, NgApexchartsModule, RouterLink],
 })
 export class MenuItemChartCardComponent implements OnInit, OnDestroy {
   public chartOptions: Partial<ChartOptions>;
