@@ -14,6 +14,8 @@ import { provideToastr } from 'ngx-toastr';
 import { AuthStateService } from './app/services/auth-state.service';
 import { authReducer } from './app/core/state/auth/auth.reducer';
 import { AuthEffects } from './app/core/state/auth/auth.effects';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './app/core/interceptor/interceptor';
 
 if (environment.production) {
   enableProdMode();
@@ -49,7 +51,12 @@ bootstrapApplication(AppComponent, {
       useFactory: (authStateService: AuthStateService) => () => authStateService.initializeAuthState(),
       deps: [AuthStateService],
       multi: true
-    }
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
   ],
 }).catch((err) => console.error(err));
 
