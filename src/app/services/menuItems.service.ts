@@ -14,7 +14,7 @@ export class MenuItemsService {
   private readonly MenuItemsCollectionId = environment.menuItemsCollectionId;
   private menuItemCreatedSource = new BehaviorSubject<MenuItem | null>(null);
   private menuItemUpdatedSource = new BehaviorSubject<MenuItem | null>(null);
-  private menuItemDeletedSource = new BehaviorSubject<string |undefined | null>(null);
+  private menuItemDeletedSource = new BehaviorSubject<string | undefined | null>(null);
 
   // Observable stream to be consumed by components
   menuItemCreated$ = this.menuItemCreatedSource.asObservable();
@@ -27,8 +27,8 @@ export class MenuItemsService {
     this.menuItemCreatedSource.next(menuItem);
   }
 
-   // Emit event when a order is updated
-   menuItemUpdated(menuItem: MenuItem): void {
+  // Emit event when a order is updated
+  menuItemUpdated(menuItem: MenuItem): void {
     this.menuItemCreatedSource.next(menuItem);
   }
 
@@ -37,50 +37,57 @@ export class MenuItemsService {
     this.menuItemDeletedSource.next(menuItemId);
   }
 
-  // Create an MenuItem
-  createMenuItem(menuItemData: MenuItem): Observable<MenuItem> {
-    return from(databases.createDocument(this.databaseId, this.MenuItemsCollectionId, ID.unique(), menuItemData)).pipe(
-      map(result => result as unknown as MenuItem),
-      catchError(error => {
-        console.error('Error creating MenuItem:', error);
-        throw error;
-      })
-    );
-  }
-
   // Get all MenuItems
-  getAllMenuItems(): Observable<MenuItem[]> {
-    return from(databases.listDocuments(this.databaseId, this.MenuItemsCollectionId, [Query.orderAsc("$createdAt"), Query.limit(20)])).pipe(
-      map(result => {
+  getAllMenuItems(page: number = 1, limit: number = 10): Observable<MenuItem[]> {
+    const offset = (page - 1) * limit;
+    return from(
+      databases.listDocuments(this.databaseId, this.MenuItemsCollectionId, [
+        Query.limit(limit),
+        Query.offset(offset),
+        Query.orderDesc('$createdAt'),
+      ]),
+    ).pipe(
+      map((result) => {
         if (!result) throw new Error('No result');
         return result.documents as unknown as MenuItem[];
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Error fetching MenuItems:', error);
         throw error;
-      })
+      }),
+    );
+  }
+
+  // Create an MenuItem
+  createMenuItem(menuItemData: MenuItem): Observable<MenuItem> {
+    return from(databases.createDocument(this.databaseId, this.MenuItemsCollectionId, ID.unique(), menuItemData)).pipe(
+      map((result) => result as unknown as MenuItem),
+      catchError((error) => {
+        console.error('Error creating MenuItem:', error);
+        throw error;
+      }),
     );
   }
 
   // Get a single MenuItem by ID
   getMenuItemById(menuItemId: string): Observable<MenuItem> {
     return from(databases.getDocument(this.databaseId, this.MenuItemsCollectionId, menuItemId)).pipe(
-      map(result => result as unknown as MenuItem),
-      catchError(error => {
+      map((result) => result as unknown as MenuItem),
+      catchError((error) => {
         console.error('Error fetching MenuItem:', error);
         throw error;
-      })
+      }),
     );
   }
 
   // Update an MenuItem
   updateMenuItem(menuItemId: string, menuItemData: Partial<MenuItem>): Observable<MenuItem> {
     return from(databases.updateDocument(this.databaseId, this.MenuItemsCollectionId, menuItemId, menuItemData)).pipe(
-      map(result => result as unknown as MenuItem),
-      catchError(error => {
+      map((result) => result as unknown as MenuItem),
+      catchError((error) => {
         console.error('Error updating MenuItem:', error);
         throw error;
-      })
+      }),
     );
   }
 
@@ -88,10 +95,10 @@ export class MenuItemsService {
   deleteMenuItem(menuItemId: string): Observable<void> {
     return from(databases.deleteDocument(this.databaseId, this.MenuItemsCollectionId, menuItemId)).pipe(
       map(() => undefined), // Converting to void
-      catchError(error => {
+      catchError((error) => {
         console.error('Error deleting MenuItem:', error);
         throw error;
-      })
+      }),
     );
   }
 }
