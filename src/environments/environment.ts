@@ -8,7 +8,15 @@ export const environment = {
   appwriteProjectId: 'your-project-id-here',
   appwriteDatabaseId:'',
   userCollectionId:'',
-  // ... other settings ...
+   //Credentials
+   adminCredentials: {
+    email: '',
+    password: '',
+  },
+  moderatorCredentials: {
+    email: '',
+    password: '',
+  },
 };
 
 
