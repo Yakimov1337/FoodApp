@@ -1,4 +1,4 @@
-import { ID } from 'appwrite';
+
 import { MenuItem } from './food-menu-item.model';
 import { Order } from './order.model';
 
@@ -12,6 +12,12 @@ export interface User {
   role: Role;
   orders: Order[];
   menuItems: MenuItem[];
+}
+export interface AuthState {
+  isAuthenticated: boolean;
+  user: User | null;
+  error: string | null;
+  isLoading: boolean;
 }
 
 export enum Role {
