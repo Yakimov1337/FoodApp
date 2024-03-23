@@ -181,5 +181,18 @@
   cursor: not-allowed;
 }
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  @apply inline-block border-4 rounded-full w-4 h-4;
+  border-color: #ddd; /* Default light border color */
+  border-top-color: #3498db; /* Blue color for the top border */
+  animation: spin 1s linear infinite;
+}
+
 /** Plugins **/
 @import './assets/styles/apexchart.scss';
