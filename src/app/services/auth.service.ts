@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { from, Observable, throwError } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { account, avatars, databases, ID } from '../core/lib/appwrite';
 import { environment } from 'src/environments/environment.local';
 import { User, Role } from '../core/models/user.model';
 import { isValidUrl } from '../shared/validators/url-validator';
 import { Query } from 'appwrite';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +15,8 @@ import { Query } from 'appwrite';
 export class AuthService {
   private readonly databaseId = environment.appwriteDatabaseId;
   private readonly usersCollectionId = environment.userCollectionId;
+
+  constructor(private router: Router, private toastr: ToastrService) {}
 
   // Create user account using Appwrite's SDK and save the user to the database
   createUserAccount(user: {
@@ -66,6 +70,8 @@ export class AuthService {
   getCurrentUserSession(): Observable<User> {
     return from(account.get()).pipe(
       catchError((error) => {
+        this.router.navigate(['/auth/sign-in']);
+        localStorage.removeItem('cookieFallback');
         return throwError(() => new Error('Failed to get Appwrite account'));
       }),
       switchMap((currentAccount) => {
@@ -97,7 +103,6 @@ export class AuthService {
   signInAccount(email: string, password: string): Observable<any> {
     return from(account.createEmailSession(email, password)).pipe(
       catchError((error) => {
-        console.error('Error signing in:', error);
         return throwError(() => error);
       }),
     );
@@ -106,6 +111,7 @@ export class AuthService {
   // Sign out account
   signOutAccount(): Observable<any> {
     return from(account.deleteSession('current')).pipe(
+      tap(() => console.log('Session deletion attempted.')),
       catchError((error) => {
         console.error('Error signing out:', error);
         return throwError(() => error);
