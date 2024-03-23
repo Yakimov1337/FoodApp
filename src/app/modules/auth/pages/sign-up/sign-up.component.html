@@ -1,4 +1,4 @@
-<form class="my-10 space-y-6" [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+<form class="my-5 space-y-6" [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
   <div class="text-center">
     <h2 class="mb-1 text-3xl font-semibold text-foreground">Sign Up <span class="text-primary">!</span></h2>
     <p class="text-sm text-muted-foreground">Let's get started with your 30 day free trial</p>
@@ -17,40 +17,65 @@
   </div>
 
   <div class="space-y-3 text-left">
+    <!-- Email Field with Dynamic Label/Error Message -->
     <div class="relative">
       <input
         type="email"
         id="email"
         formControlName="email"
         autocomplete="email"
-        class="peer block"
-        placeholder=" " />
+        class="peer block placeholder-transparent"
+        placeholder=" "
+        [class.border-red-500]="signUpForm.get('email')?.touched && signUpForm.get('email')?.invalid" />
       <label
-      for="email"
-        class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
-        Email address
+        for="email"
+        class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary"
+        [class.text-red-500]="signUpForm.get('email')?.touched && signUpForm.get('email')?.invalid">
+        <ng-container *ngIf="signUpForm.get('email')?.touched">
+          <ng-container *ngIf="signUpForm.get('email')?.errors?.['required']"> Email is required </ng-container>
+          <ng-container
+            *ngIf="!signUpForm.get('email')?.errors?.['required'] && signUpForm.get('email')?.errors?.['pattern']">
+            Please enter a valid email address
+          </ng-container>
+          <ng-container *ngIf="!signUpForm.get('email')?.errors"> Email address </ng-container>
+        </ng-container>
+        <ng-container *ngIf="!signUpForm.get('email')?.touched"> Email address </ng-container>
       </label>
     </div>
+
+    <!-- Password Field with Dynamic Label/Error Message -->
     <div class="relative">
       <input
         type="password"
         id="password"
         formControlName="password"
-        class="peer block"
+        class="peer block placeholder-transparent"
         placeholder=" "
-        autocomplete="new-password" />
+        autocomplete="new-password"
+        [class.border-red-500]="signUpForm.get('password')?.touched && signUpForm.get('password')?.invalid" />
       <label
         for="password"
-        class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary">
-        Password
+        class="absolute top-2 left-1 z-10 origin-[0] -translate-y-4 scale-95 transform bg-background px-2 text-sm text-muted-foreground duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-95 peer-focus:px-2 peer-focus:text-primary"
+        [class.text-red-500]="signUpForm.get('password')?.touched && signUpForm.get('password')?.invalid">
+        <!-- Dynamic label text based on validation state -->
+        <ng-container *ngIf="signUpForm.get('password')?.touched">
+          <ng-container *ngIf="signUpForm.get('password')?.errors?.['required']"> Password is required </ng-container>
+          <ng-container
+            *ngIf="!signUpForm.get('password')?.errors?.['required'] && signUpForm.get('password')?.errors?.['minlength']">
+            Password must be at least 8 characters long
+          </ng-container>
+          <ng-container *ngIf="!signUpForm.get('password')?.errors"> Password </ng-container>
+        </ng-container>
+        <ng-container *ngIf="!signUpForm.get('password')?.touched"> Password </ng-container>
       </label>
     </div>
+
     <!-- Password Meeter -->
     <div class="grid grid-cols-4 gap-2">
-      <div class="h-1 rounded-sm bg-muted"></div>
-      <div class="h-1 rounded-sm bg-muted"></div>
-      <div class="h-1 rounded-sm bg-muted"></div>
-      <div class="h-1 rounded-sm bg-muted"></div>
+      <div
+        *ngFor="let filled of passwordStrength; index as i"
+        class="h-1 rounded-sm"
+        [ngClass]="filled ? 'bg-primary' : 'bg-muted'"></div>
     </div>
     <span class="text-xs text-muted-foreground">
       Use 8 or more characters with a mix of letters, numbers & symbols.
@@ -81,7 +106,12 @@
 
   <!-- Submit Button -->
   <div>
-    <app-button full impact="bold" tone="primary" shape="rounded" size="medium">Sign up</app-button>
+    <app-button full impact="bold" tone="primary" shape="rounded" size="medium">
+      <ng-container *ngIf="!isLoading; else spinnerTemplate">Sign up</ng-container>
+      <ng-template #spinnerTemplate>
+        <div class="spinner"></div>
+      </ng-template>
+    </app-button>
   </div>
 
   <!-- Sign-up -->
