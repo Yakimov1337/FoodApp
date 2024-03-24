@@ -7,5 +7,6 @@ export interface Order {
   menuItems: MenuItem[];
   totalCost: number;
   createdOn: Date;
+  paid: boolean,
   status: 'pending' | 'completed' | 'cancelled';
 }
