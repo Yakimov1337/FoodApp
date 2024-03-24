@@ -45,7 +45,7 @@ export class UserService {
       databases.listDocuments(this.databaseId, this.usersCollectionId, [
         Query.limit(limit),
         Query.offset(offset),
-        // Query.orderDesc('createdAt'),
+        Query.orderDesc('$createdAt'),
       ]),
     ).pipe(
       map((result) => result.documents as unknown as User[]),
