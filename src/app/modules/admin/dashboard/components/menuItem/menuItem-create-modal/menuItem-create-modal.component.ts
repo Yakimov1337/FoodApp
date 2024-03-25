@@ -31,6 +31,7 @@ export class MenuItemCreateModalComponent {
       description: ['', Validators.required],
       price: [1, [Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
       imageUrl: ['', [urlFormValidator()]],
+      category: ['Burger',Validators.required],
       useDefaultImage: [false],
     });
   }

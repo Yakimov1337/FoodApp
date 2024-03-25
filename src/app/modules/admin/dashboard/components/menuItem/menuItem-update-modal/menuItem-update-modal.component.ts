@@ -18,7 +18,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class MenuItemUpdateModalComponent implements OnInit {
   menuItemForm: FormGroup;
-  menuItems$: Observable<MenuItem[]>;
+  // menuItems$: Observable<MenuItem[]>;
   private currentMenuItemId: string | null = null;
 
   constructor(
@@ -32,10 +32,11 @@ export class MenuItemUpdateModalComponent implements OnInit {
       title: ['', Validators.required],
       description: ['', Validators.required],
       price: [1, [Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
+      category: ['Burger',Validators.required],
       imageUrl: ['', [urlFormValidator()]],
     });
 
-    this.menuItems$ = this.menuItemsService.getAllMenuItems();
+    // this.menuItems$ = this.menuItemsService.getAllMenuItems();
   }
 
   ngOnInit(): void {
@@ -48,6 +49,7 @@ export class MenuItemUpdateModalComponent implements OnInit {
           title: menuItem.title,
           description: menuItem.description,
           price: menuItem.price,
+          category: menuItem.category,
           imageUrl: menuItem.imageUrl,
         });
       }
