@@ -1,4 +1,4 @@
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, interval, startWith, switchMap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { Component, Input, OnInit } from '@angular/core';
@@ -12,6 +12,7 @@ import { openCreateOrderModal } from '../../../../../../core/state/modal/order/m
 import { OrderCreateModalComponent } from '../order-create-modal/order-create-modal.component';
 import { selectIsCreateOrderModalOpen } from '../../../../../../core/state/modal/order/modal.selectors';
 import { ToastrService } from 'ngx-toastr';
+import { PaginationComponent } from '../../../../../../shared/components/pagination/pagination.component';
 @Component({
   selector: '[orders-table]',
   templateUrl: './orders-table.component.html',
@@ -24,31 +25,72 @@ import { ToastrService } from 'ngx-toastr';
     LoaderComponent,
     AngularSvgIconModule,
     ButtonComponent,
+    PaginationComponent,
   ],
 })
 export class OrdersTableComponent implements OnInit {
   public orders: Order[] = [];
   public isLoading: boolean = true;
+  public currentPage = 1;
+  public totalPages!: number;
+  public timeSinceLastUpdate$!: Observable<number>;
+  public lastUpdated: Date = new Date();
+
   private subscriptions: Subscription = new Subscription();
-  showCreateOrderModal$ = this.store.select(selectIsCreateOrderModalOpen);
 
   constructor(private ordersService: OrdersService, private store: Store, private toastr: ToastrService) {}
 
   ngOnInit(): void {
-    //Fetch orders
-    const ordersSub = this.ordersService.getAllOrders().subscribe({
+    this.loadOrders(this.currentPage);
+    this.initializeSubscriptions();
+    this.initializeTimeSinceLastUpdate();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  loadOrders(page: number, limit: number = 10): void {
+    this.isLoading = true;
+    this.ordersService.getAllOrders(page, limit).subscribe({
       next: (orders) => {
         this.orders = orders;
+        this.totalPages = Math.ceil(50 / limit); //change later
         this.isLoading = false;
       },
       error: (error) => {
-        this.toastr.error('Error fetching orders', error);
+        this.toastr.error('Error fetching Orders', error);
         this.isLoading = false;
       },
     });
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadOrders(this.currentPage);
+  }
+
+  openCreateModal() {
+    console.log('Dispatching openCreateOrderModal action');
+    this.store.dispatch(openCreateOrderModal());
+  }
+
+  private initializeTimeSinceLastUpdate(): void {
+    this.timeSinceLastUpdate$ = interval(60000) // Emit value every 60 seconds
+      .pipe(
+        startWith(0), // Start immediately upon subscription
+        switchMap(() => {
+          const now = new Date();
+          const difference = now.getTime() - this.lastUpdated.getTime();
+          return [Math.floor(difference / 60000)]; // Convert to minutes
+        }),
+      );
+  }
+
+  private initializeSubscriptions(): void {
     const orderCreatedSub = this.ordersService.orderCreated$.subscribe((order) => {
       if (order) {
-        this.reloadOrders(); // Refetch orders after a new order is created
+        this.loadOrders(this.currentPage); // Refetch orders after a new order is created
       }
     });
     const orderDeletedSub = this.ordersService.orderDeleted$.subscribe((deletedOrderId) => {
@@ -58,30 +100,5 @@ export class OrdersTableComponent implements OnInit {
     });
     this.subscriptions.add(orderCreatedSub);
     this.subscriptions.add(orderDeletedSub);
-    this.subscriptions.add(ordersSub);
-  }
-
-  reloadOrders(): void {
-    this.isLoading = true;
-    this.ordersService.getAllOrders().subscribe({
-      next: (orders) => {
-        console.log('Fetched orders:', orders);
-        this.orders = orders;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        this.toastr.error('Error fetching Orders',error)
-        this.isLoading = false;
-      },
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
-
-  openCreateModal() {
-    console.log('Dispatching openCreateOrderModal action');
-    this.store.dispatch(openCreateOrderModal());
   }
 }
