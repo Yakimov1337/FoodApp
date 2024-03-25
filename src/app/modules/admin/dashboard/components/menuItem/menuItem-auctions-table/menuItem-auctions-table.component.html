@@ -2,7 +2,7 @@
   <div class="mb-4 flex items-center justify-between">
     <div class="flex-col items-center">
       <h3 class="text-md font-bold text-foreground">Food menu items Live Data</h3>
-      <span class="text-xs text-muted-foreground">Updated 3 minutes ago</span>
+      <span class="text-xs text-muted-foreground">Updated {{ timeSinceLastUpdate$ | async }} minutes ago</span>
     </div>
     <app-button
       (click)="openCreateModal()"
@@ -29,6 +29,7 @@
           <th class="py-3 text-left">Title</th>
           <th class="py-3">Price</th>
           <th class="py-3">Sales</th>
+          <th class="py-3">Profit</th>
           <th class="py-3">Category</th>
           <th class="py-3">Default</th>
           <th class="py-3 text-end">Actions</th>
@@ -48,5 +49,11 @@
     <p *ngIf="!isLoading && menuItems.length === 0" class="mx-auto p-12 text-center text-foreground">
       No items available
     </p>
+      <!-- Pagination -->
+      <app-pagination
+      class="mx-auto"
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      (pageChange)="onPageChange($event)"></app-pagination>
   </div>
 </div>
