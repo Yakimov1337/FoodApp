@@ -33,14 +33,15 @@ export class OrderCreateModalComponent {
     this.orderForm = this.fb.group({
       user: ['', Validators.required],
       menuItems: new FormArray([]),
-      totalCost: [1, Validators.required],
+      totalCost: [1, [Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
       createdOn: [currentDate],
+      paid: [false, Validators.required],
       status: ['pending', Validators.required],
     });
   }
   ngOnInit() {
     this.users$ = this.userService.getAllUsers();
-    this.menuItems$ = this.menuItemsService.getAllMenuItems();
+    // this.menuItems$ = this.menuItemsService.getAllMenuItems();
   }
 
   // Function to handle form submission
