@@ -35,9 +35,10 @@ export class OrderUpdateModalComponent implements OnInit {
     // Initialize the form with structure
     this.orderForm = this.fb.group({
       user: ['', Validators.required],
-      totalCost: ['', Validators.required],
+      totalCost: ['',[Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
       createdOn: ['', Validators.required],
       status: ['', Validators.required],
+      paid: [false, Validators.required],
       menuItems: this.fb.array([]),
     });
 
@@ -50,10 +51,10 @@ export class OrderUpdateModalComponent implements OnInit {
       if (order) {
         this.currentOrderId = order.$id;
         const formattedCreatedOn = formatDate(order.createdOn, 'yyyy-MM-dd', 'en-US');
-
         this.orderForm.patchValue({
           user: order.user?.$id,
           totalCost: order.totalCost,
+          paid: order.paid,
           createdOn: formattedCreatedOn,
           status: order.status,
         });
