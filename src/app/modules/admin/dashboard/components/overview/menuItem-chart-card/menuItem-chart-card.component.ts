@@ -39,7 +39,7 @@ export class MenuItemChartCardComponent implements OnInit, OnDestroy {
     this.chartOptions = {
       series: [
         {
-          name: 'Etherium',
+          name: 'Profit rate',
           data: data,
         },
       ],
