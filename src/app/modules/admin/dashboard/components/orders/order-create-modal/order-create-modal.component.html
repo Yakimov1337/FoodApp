@@ -27,12 +27,16 @@
       <form class="p-4 md:p-5" [formGroup]="orderForm" (ngSubmit)="createOrder()">
         <div class="mb-4 grid grid-cols-2 gap-4">
           <div class="col-span-2">
-            <label for="user" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">User Email<span class="text-red-500">*</span></label>
             <div
-              *ngIf="orderForm.get('user')?.errors?.['required'] && orderForm.get('user')?.touched"
+              *ngIf="orderForm.get('user')?.errors?.['required'] && orderForm.get('user')?.touched else emailLabel"
               class="text-red-500">
               Email is required
             </div>
+            <ng-template #emailLabel>
+              <label for="user" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >User Email<span class="text-red-500">*</span></label
+              >
+            </ng-template>
             <select
               formControlName="user"
               id="user"
@@ -64,16 +68,45 @@
               class="focus:ring-primary-600 focus:border-primary-600 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400"
               placeholder="Type order date" />
           </div>
-          <div class="col-span-2">
-            <label for="totalCost" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >Total cost</label
-            >
+          <div class="col-span-2 sm:col-span-1">
+            <div
+              *ngIf="orderForm.get('totalCost')?.errors?.['required'] && orderForm.get('totalCost')?.touched else costValidLabel "
+              class="text-red-500">
+              Total cost is required
+            </div>
+            <ng-template #costValidLabel>
+              <div *ngIf="orderForm.get('totalCost')?.errors?.['pattern'] else costLabel" class="text-red-500">
+                Total cost must be a valid number
+              </div>
+            </ng-template>
+            <ng-template #costLabel>
+              <label for="totalCost" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >Total cost</label
+              >
+            </ng-template>
             <input
               formControlName="totalCost"
               type="tel"
               id="totalCost"
               class="focus:ring-primary-600 focus:border-primary-600 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400"
               placeholder="Type order total cost" />
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <label for="paid" class="mb-4 block text-sm font-medium text-gray-900 dark:text-white">
+              Paid <span class="text-red-500">*</span>
+            </label>
+            <div class="flex gap-2">
+              <label class="flex items-center cursor-pointer">
+                <input type="radio" class="sr-only" formControlName="paid" [value]="true">
+                <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
+                <span class="ml-2 text-gray-900 dark:text-white">Yes</span>
+              </label>
+              <label class="flex items-center cursor-pointer">
+                <input type="radio" class="sr-only" formControlName="paid" [value]="false">
+                <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
+                <span class="ml-2 text-gray-900 dark:text-white">No</span>
+              </label>
+            </div>
           </div>
           <div class="col-span-2">
             <label for="menuItems" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
