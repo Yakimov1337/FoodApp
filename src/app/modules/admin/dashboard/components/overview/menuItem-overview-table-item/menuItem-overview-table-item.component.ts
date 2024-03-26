@@ -30,4 +30,12 @@ export class MenuItemOverviewTableItemComponent implements OnInit {
   openDeleteModal() {
     this.store.dispatch(openDeleteMenuItemModal({ menuItemId: this.menuItem.$id }));
   }
+
+  truncateDescription(description: string, maxLength: number = 25): string {
+    if (description.length > maxLength) {
+      return description.substring(0, maxLength) + '...';
+    } else {
+      return description;
+    }
+  }
 }
