@@ -3,38 +3,37 @@
   <button (click)="toggleMenu()" class="relative flex rounded-full bg-card text-sm" type="button">
     <span class="sr-only">Open user menu</span>
     <img
-      clickOutside
+      *ngIf="user$ | async as user"
       (clickOutside)="isOpen = false"
       class="h-9 w-9 rounded-md"
-      src="https://static.vecteezy.com/system/resources/previews/008/506/404/original/contact-person-red-icon-free-png.png"
-      alt="" />
+      [src]="user.imageUrl"
+      alt="User Profile" />
   </button>
   <!-- Dropdown -->
   <div
     [@openClose]="isOpen ? 'open' : 'closed'"
     class="absolute right-0 z-20 mt-2 w-60 origin-top-right transform rounded-md bg-background py-4 shadow-custom ring-1 ring-transparent ring-opacity-5 transition focus:outline-none">
-    <div class="flext-row flex items-center px-4 pb-4">
+    <div *ngIf="user$ | async as user" class="flext-row flex items-center px-4 pb-4">
       <div class="w-10 shrink-0">
-        <img class="rounded-md" src="https://static.vecteezy.com/system/resources/previews/008/506/404/original/contact-person-red-icon-free-png.png" alt="" />
+        <img class="rounded-md" [src]="user.imageUrl" alt="" />
       </div>
       <div class="overflow-hidden px-2 text-sm font-semibold text-foreground">
-        John Doe
-        <p class="truncate text-ellipsis text-xs font-semibold text-muted-foreground">asd&#64;gmail.com</p>
+        <p>Hello, {{ user.role }}</p>
+
+        <p class="truncate text-ellipsis text-xs font-semibold text-muted-foreground">{{ user.email }}</p>
       </div>
     </div>
 
     <div class="border-b border-dashed border-border"></div>
 
     <ul class="my-2 mx-4 flex flex-col">
-      @for (item of profileMenu; track $index) {
       <li
-        routerLink="{{ item.link }}"
-        :key="$index"
+        *ngFor="let item of profileMenu"
+        (click)="onMenuItemClick(item)"
         class="inline-flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold text-muted-foreground hover:bg-card hover:text-primary">
-        <svg-icon src="{{ item.icon }}" [svgClass]="'h-5 w-5 text-muted-foreground/50'"> </svg-icon>
+        <svg-icon [src]="item.icon" [svgClass]="'h-5 w-5 text-muted-foreground/50'"></svg-icon>
         {{ item.title }}
       </li>
-      }
     </ul>
     <hr class="border-dashed border-border" />
     <div class="mx-4 my-2">

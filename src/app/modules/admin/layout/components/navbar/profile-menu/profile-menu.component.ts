@@ -1,17 +1,22 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { NgClass } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule, NgClass } from '@angular/common';
 import { ClickOutsideDirective } from '../../../../../../shared/directives/click-outside.directive';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { ThemeService } from '../../../../../../services/theme.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import * as AuthActions from '../../../../../../core/state/auth/auth.actions';
+import { Store, select } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { User } from '../../../../../../core/models';
+import { selectCurrentUser } from '../../../../../../core/state/auth/auth.selectors';
 
 @Component({
   selector: 'app-profile-menu',
   templateUrl: './profile-menu.component.html',
   styleUrls: ['./profile-menu.component.scss'],
   standalone: true,
-  imports: [ClickOutsideDirective, NgClass, RouterLink, AngularSvgIconModule],
+  imports: [ClickOutsideDirective, NgClass, RouterLink, AngularSvgIconModule, CommonModule],
   animations: [
     trigger('openClose', [
       state(
@@ -36,6 +41,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
   ],
 })
 export class ProfileMenuComponent implements OnInit {
+  user$: Observable<User | null>;
   public isOpen = false;
   public profileMenu = [
     {
@@ -88,7 +94,20 @@ export class ProfileMenuComponent implements OnInit {
 
   public themeMode = ['light', 'dark'];
 
-  constructor(public themeService: ThemeService) {}
+  constructor(public themeService: ThemeService, private router: Router, private store: Store) {
+    this.user$ = this.store.pipe(select(selectCurrentUser));
+  }
+
+  logout() {
+    this.store.dispatch(AuthActions.logout());
+  }
+  public onMenuItemClick(item: any): void {
+    if (item.title === 'Log out') {
+      this.logout();
+    } else {
+      this.router.navigate([item.link]);
+    }
+  }
 
   ngOnInit(): void {}
 
