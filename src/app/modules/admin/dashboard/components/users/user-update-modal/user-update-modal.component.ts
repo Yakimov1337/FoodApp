@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { User } from '../../../../../../core/models';
@@ -8,6 +8,8 @@ import { closeUpdateUserModal } from '../../../../../../core/state/modal/user/mo
 import { ToastrService } from 'ngx-toastr';
 import { selectUserToUpdate } from '../../../../../../core/state/modal/user/modal.selectors';
 import { urlFormValidator } from '../../../../../../shared/validators/url-validator';
+import { Observable } from 'rxjs';
+import { selectCurrentUser } from '../../../../../../core/state/auth/auth.selectors';
 
 @Component({
   selector: '[user-update-modal]',
@@ -17,6 +19,7 @@ import { urlFormValidator } from '../../../../../../shared/validators/url-valida
 })
 export class UserUpdateModalComponent {
   userForm: FormGroup;
+  currentUser$: Observable<User | null>;
   private currentUserId: string | undefined | null = null;
   get emailControl(): FormControl {
     const email = this.userForm.get('email');
@@ -34,16 +37,18 @@ export class UserUpdateModalComponent {
     this.userForm = this.fb.group({
       email: new FormControl({ value: '', disabled: true }),
       name: [''],
-      role: ['Normal', Validators.required],
+      role: ['', Validators.required],
       phoneNumber: [''],
       imageUrl: ['', urlFormValidator()],
     });
+    this.currentUser$ = this.store.pipe(select(selectCurrentUser));
   }
 
   ngOnInit(): void {
     this.store.select(selectUserToUpdate).subscribe((user) => {
       console.log(user);
       if (user) {
+        console.log(user.role)
         this.currentUserId = user.$id;
         this.userForm.patchValue({
           email: user.email,
