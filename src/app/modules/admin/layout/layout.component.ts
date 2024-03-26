@@ -3,13 +3,13 @@ import { FooterComponent } from './components/footer/footer.component';
 import { NavigationEnd, Router, RouterOutlet, Event } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { BottomNavbarComponent } from './components/bottom-navbar/bottom-navbar.component';
 
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.scss'],
   standalone: true,
-  imports: [SidebarComponent, NavbarComponent, RouterOutlet, FooterComponent],
+  imports: [SidebarComponent, NavbarComponent, RouterOutlet, FooterComponent, BottomNavbarComponent],
 })
 export class LayoutComponent implements OnInit {
   private mainContent: HTMLElement | null = null;
