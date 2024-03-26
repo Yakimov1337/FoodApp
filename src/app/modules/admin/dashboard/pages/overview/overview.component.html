@@ -13,7 +13,7 @@
       <!-- More Cards... -->
       <div menuItem-single-card [menuItem]="menuItems[2]"></div>
       <div menuItem-chart-card class="md:col-span-2 xl:col-span-1"></div>
-      <div menuItem-auctions-table class="md:col-span-2 xl:col-span-3"></div>
+      <div menuItem-overview-table [menuItems]="menuItems" [isLoading]="isLoading" class="md:col-span-2 xl:col-span-3"></div>
     </div>
   </ng-container>
 

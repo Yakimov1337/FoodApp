@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuItemAuctionsTableComponent } from '../../components/menuItem/menuItem-auctions-table/menuItem-auctions-table.component';
-import { MenuItemChartCardComponent } from '../../components/menuItem/menuItem-chart-card/menuItem-chart-card.component';
-import { MenuItemSingleCardComponent } from '../../components/menuItem/menuItem-single-card/menuItem-single-card.component';
-import { MenuItemDualCardComponent } from '../../components/menuItem/menuItem-dual-card/menuItem-dual-card.component';
-import { MenuItemHeaderComponent } from '../../components/menuItem/menuItem-header/menuItem-header.component';
+import { MenuItemOverviewTableComponent } from '../../components/overview/menuItem-overview-table/menuItem-overview-table.component';
+import { MenuItemChartCardComponent } from '../../components/overview/menuItem-chart-card/menuItem-chart-card.component';
+import { MenuItemSingleCardComponent } from '../../components/overview/menuItem-single-card/menuItem-single-card.component';
+import { MenuItemDualCardComponent } from '../../components/overview/menuItem-dual-card/menuItem-dual-card.component';
+import { MenuItemHeaderComponent } from '../../components/overview/menuItem-header/menuItem-header.component';
 import { MenuItemsService } from '../../../../../services/menuItems.service';
 import { MenuItem } from '../../../../../core/models';
 import { Subscription } from 'rxjs';
@@ -11,42 +11,47 @@ import { LoaderComponent } from '../../../../../shared/components/loader/loader.
 import { CommonModule } from '@angular/common';
 
 @Component({
-    selector: 'app-MenuItem',
-    templateUrl: './overview.component.html',
-    standalone: true,
-    imports: [
-        MenuItemHeaderComponent,
-        MenuItemDualCardComponent,
-        MenuItemSingleCardComponent,
-        MenuItemChartCardComponent,
-        MenuItemAuctionsTableComponent,
-        LoaderComponent,
-        CommonModule,
-    ],
+  selector: 'app-MenuItem',
+  templateUrl: './overview.component.html',
+  standalone: true,
+  imports: [
+    MenuItemHeaderComponent,
+    MenuItemDualCardComponent,
+    MenuItemSingleCardComponent,
+    MenuItemChartCardComponent,
+    MenuItemOverviewTableComponent,
+    LoaderComponent,
+    CommonModule,
+  ],
 })
 export class OverviewComponent implements OnInit {
   public menuItems: MenuItem[] = [];
   public isLoading: boolean = true;
+  public currentPage = 1;
+  public totalPages!: number;
+
   private subscriptions: Subscription = new Subscription();
 
   constructor(private menuItemsService: MenuItemsService) {}
 
   ngOnInit(): void {
-    //Fetch items
-    const menuItemsSub = this.menuItemsService.getAllMenuItems().subscribe({
+    this.loadMenuItems(this.currentPage);
+  }
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+  loadMenuItems(page: number, limit: number = 5): void {
+    this.isLoading = true;
+    this.menuItemsService.getAllMenuItems(page, limit).subscribe({
       next: (menuItems) => {
-        this.menuItems = menuItems;
+        this.menuItems = menuItems.sort((a, b) => b.orders.length - a.orders.length);
+        this.totalPages = Math.ceil(50 / limit); //change later
         this.isLoading = false;
       },
       error: (error) => {
-        console.error('Error fetching items:', error);
+        console.log('Error fetching items:', error);
         this.isLoading = false;
       },
     });
-    this.subscriptions.add(menuItemsSub);
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 }
