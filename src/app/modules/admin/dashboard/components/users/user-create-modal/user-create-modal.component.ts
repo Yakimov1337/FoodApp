@@ -30,7 +30,7 @@ export class UserCreateModalComponent {
       password: ['', [Validators.required, Validators.minLength(8)]],
       name: [''],
       role: ['Normal', Validators.required],
-      phoneNumber: [''],
+      phoneNumber: ['',Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)],
       imageUrl: [''],
     });
   }
@@ -40,7 +40,6 @@ export class UserCreateModalComponent {
     if (this.userForm.valid) {
       this.authService.createUserAccount(this.userForm.value).subscribe({
         next: (user: User) => {
-          console.log('User created successfully', user);
           this.closeModal();
           this.resetForm(); // Reset form to default state after creation
           // This will be called only after the user is saved because of switchmap in auth service

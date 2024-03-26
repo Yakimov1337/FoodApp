@@ -26,14 +26,16 @@
       <form class="p-4 md:p-5" [formGroup]="userForm" (ngSubmit)="createUser()">
         <div class="mb-4 grid grid-cols-2 gap-4">
           <div class="col-span-2">
-            <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >Email <span class="text-red-500">*</span></label
-            >
             <div
-              *ngIf="userForm.get('email')?.errors?.['required'] && userForm.get('email')?.touched"
-              class="text-red-500">
+              *ngIf="userForm.get('email')?.errors?.['required'] && userForm.get('email')?.touched; else emailLabel"
+              class="mb-2 block text-sm font-medium text-red-500">
               Email is required
             </div>
+            <ng-template #emailLabel>
+              <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+                Email <span class="text-red-500">*</span>
+              </label>
+            </ng-template>
             <input
               formControlName="email"
               type="email"
@@ -44,19 +46,23 @@
               autocomplete="email" />
           </div>
           <div class="col-span-2">
-            <label for="password" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >Password <span class="text-red-500">*</span></label
-            >
             <div
-              *ngIf="userForm.get('password')?.errors?.['required'] && userForm.get('password')?.touched"
-              class="text-red-500">
+              *ngIf="userForm.get('password')?.errors?.['required'] && userForm.get('password')?.touched; else passwordMinLength"
+              class="mb-2 block text-sm font-medium text-red-500">
               Password is required
             </div>
-            <div
-              *ngIf="userForm.get('password')?.errors?.['minlength'] && userForm.get('password')?.touched"
-              class="text-red-500">
-              Password must be at least 8 characters long
-            </div>
+            <ng-template #passwordMinLength>
+              <div
+                *ngIf="userForm.get('password')?.errors?.['minlength'] && userForm.get('password')?.touched; else passwordLabel"
+                class="mb-2 block text-sm font-medium text-red-500">
+                Password must be at least 8 characters long
+              </div>
+            </ng-template>
+            <ng-template #passwordLabel>
+              <label for="password" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
+                Password <span class="text-red-500">*</span>
+              </label>
+            </ng-template>
             <input
               formControlName="password"
               type="password"
@@ -99,7 +105,13 @@
               placeholder="Type user imageUrl" />
           </div> -->
           <div class="col-span-2">
-            <label for="phone" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Phone</label>
+            <label
+              *ngIf="! userForm.get('phoneNumber')?.errors?.['pattern'] else error"
+              for="phone"
+              class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >Phone</label
+            >
+            <ng-template #error> <div class="text-red-500">Phone number format is not valid.</div></ng-template>
             <input
               formControlName="phoneNumber"
               type="tel"
