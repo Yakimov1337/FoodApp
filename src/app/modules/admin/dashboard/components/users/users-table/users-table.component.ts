@@ -1,85 +1,110 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { Observable, Subscription, interval, startWith, switchMap } from 'rxjs';
+import { UserService } from '../../../../../../services/user.service';
+import { User } from '../../../../../../core/models';
+import { openCreateUserModal } from '../../../../../../core/state/modal/user/modal.actions';
+import { CommonModule, NgFor } from '@angular/common';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { UsersTableItemComponent } from '../users-table-item/users-table-item.component';
-import { CommonModule, NgFor } from '@angular/common';
-import { MenuItem, User } from '../../../../../../core/models';
 import { LoaderComponent } from '../../../../../../shared/components/loader/loader.component';
-import { openCreateUserModal } from '../../../../../../core/state/modal/user/modal.actions';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
-import { Subscription } from 'rxjs';
-import { UserService } from '../../../../../../services/user.service';
+import { PaginationComponent } from '../../../../../../shared/components/pagination/pagination.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: '[users-table]',
   templateUrl: './users-table.component.html',
   standalone: true,
-  imports: [NgFor, AngularSvgIconModule, ButtonComponent, UsersTableItemComponent, CommonModule, LoaderComponent],
+  imports: [
+    CommonModule,
+    NgFor,
+    AngularSvgIconModule,
+    ButtonComponent,
+    UsersTableItemComponent,
+    LoaderComponent,
+    PaginationComponent,
+  ],
 })
-export class UsersTableComponent implements OnInit {
+export class UsersTableComponent implements OnInit, OnDestroy {
   public users: User[] = [];
-  public isLoading: boolean = true;
+  public isLoading = true;
+  public currentPage = 1;
+  public totalPages!: number;
+  private lastUpdated = new Date();
+  public timeSinceLastUpdate$!: Observable<number>;
 
-  private subscriptions: Subscription = new Subscription();
+  private subscriptions = new Subscription();
 
-  constructor(private store: Store,private userService: UserService) {}
+  constructor(private store: Store, private userService: UserService,private toastr: ToastrService) {}
 
   ngOnInit(): void {
-    this.isLoading = true;
-    const subscription = this.userService.getAllUsers().subscribe({
-      next: (users) => {
-        this.users = users;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error fetching Users:', error);
-        this.isLoading = false;
-      },
-    });
-    const userCreatedSub = this.userService.userCreated$.subscribe(user => {
-      if (user) {
-        this.loadUsers(); // Refetch users after a new user is created
-      }
-    });
-    const userUpdatedSub = this.userService.userUpdated$.subscribe(user => {
-      if (user) {
-        this.loadUsers(); // Refetch users after use update
-      }
-    });
-    const userDeletedSub = this.userService.userDeleted$.subscribe((deletedUserId) => {
-      if (deletedUserId) {
-        this.users = this.users.filter((user) => user.$id !== deletedUserId);
-      }
-    });
-
-    // Store subscriptions
-    this.subscriptions.add(subscription);
-    this.subscriptions.add(userCreatedSub);
-    this.subscriptions.add(userUpdatedSub);
-    this.subscriptions.add(userDeletedSub);
-
-  }
-
-  loadUsers(): void {
-    this.isLoading = true;
-    this.userService.getAllUsers().subscribe({
-      next: (users) => {
-        console.log('Fetched users:', users);
-        this.users = users;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error fetching Users:', error);
-        this.isLoading = false;
-      },
-    });
+    this.loadUsers(this.currentPage);
+    this.initializeSubscriptions();
+    this.initializeTimeSinceLastUpdate();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-  openCreateModal() {
+
+  loadUsers(page: number, limit: number = 10): void {
+    this.isLoading = true;
+    this.userService.getAllUsers(page, limit).subscribe({
+      next: (users) => {
+        this.users = users;
+        this.totalPages = Math.ceil(50 / limit); //change later
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.toastr.error('Error fetching Users:', error);
+        this.isLoading = false;
+      },
+    });
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadUsers(this.currentPage);
+  }
+
+  openCreateModal(): void {
     console.log('Dispatching openCreateUserModal action');
     this.store.dispatch(openCreateUserModal());
+  }
+
+  private initializeTimeSinceLastUpdate(): void {
+    this.timeSinceLastUpdate$ = interval(60000).pipe(
+      startWith(0),
+      switchMap(() => {
+        const now = new Date();
+        const difference = now.getTime() - this.lastUpdated.getTime();
+        return [Math.floor(difference / 60000)]; // Convert to minutes
+      }),
+    );
+  }
+
+  private initializeSubscriptions(): void {
+    const userCreatedSub = this.userService.userCreated$.subscribe((user) => {
+      if (user) {
+        this.loadUsers(this.currentPage); // Refetch users after a new user is created
+      }
+    });
+
+    const userUpdatedSub = this.userService.userUpdated$.subscribe((user) => {
+      if (user) {
+        this.loadUsers(this.currentPage); // Refetch users after a user update
+      }
+    });
+
+    const userDeletedSub = this.userService.userDeleted$.subscribe((userId) => {
+      if (userId) {
+        this.loadUsers(this.currentPage); // Refetch users after a user is deleted
+      }
+    });
+
+    this.subscriptions.add(userCreatedSub);
+    this.subscriptions.add(userUpdatedSub);
+    this.subscriptions.add(userDeletedSub);
   }
 }
