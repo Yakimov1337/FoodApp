@@ -194,5 +194,16 @@
   animation: spin 1s linear infinite;
 }
 
+/* Toggle switch background */
+.toggle-bg {
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* Styling for when radio is checked */
+input[type="radio"]:checked + .toggle-bg {
+  background-color: #4ade80; /* Tailwind green-400 */
+  border-color: #22c55e; /* Tailwind green-500 */
+}
+
 /** Plugins **/
 @import './assets/styles/apexchart.scss';
