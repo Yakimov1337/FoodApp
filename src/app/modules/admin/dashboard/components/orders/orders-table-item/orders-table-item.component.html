@@ -36,7 +36,7 @@
 <td class="py-2 text-center">
   <div class="inline-block">
     <!-- Assuming menuItem.isAvailable is the boolean property -->
-    <app-button impact="light" tone="warning" shape="rounded" size="medium">
+    <app-button impact="light"   [tone]="order.paid ? 'success' : 'danger'"  shape="rounded" size="medium">
       {{ order.paid ? 'Yes' : 'No' }}
     </app-button>
   </div>
