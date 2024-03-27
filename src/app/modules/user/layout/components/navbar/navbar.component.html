@@ -1,0 +1,59 @@
+<header
+  class="fixed top-0 left-0 z-20 w-full border-b-2 border-b-gray-400 bg-white transition duration-300 ease-in-out dark:bg-transparent"
+  [ngClass]="{ ' bg-opacity-90 shadow-xl backdrop-blur': isScrolled }">
+  <nav class="container mx-auto flex items-center justify-between py-4 px-6">
+    <!-- Logo -->
+    <a href="#" class="flex items-center">
+      <span class="text-xl  font-bold text-primary">Food Squad</span>
+    </a>
+
+    <!-- Navigation Links -->
+    <div class="hidden items-center space-x-6 dark:text-white md:flex">
+      <a routerLink="/" class="transition duration-300 hover:text-primary">Home</a>
+      <a routerLink="/menu" class="duration-300 hover:text-primary">Menu</a>
+      <a routerLink="/services" class="transition duration-300 hover:text-primary">Services</a>
+      <a routerLink="/about-us" class="transition duration-300 hover:text-primary">About us</a>
+      <a routerLink="/contact-us" class="transition duration-300 hover:text-primary">Contact us</a>
+    </div>
+
+
+    <div class="flex">
+      <!-- Mobile Menu Button -->
+      <button class="flex items-center dark:text-white md:hidden" (click)="toggleMobileMenu()">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+        </svg>
+      </button>
+      <!-- Admin User Button -->
+      <div *ngIf="user$ | async as user">
+        <button
+          *ngIf="user.role !== 'Normal'"
+          class="hidden rounded-lg bg-primary px-2 py-2 text-white md:inline-flex truncate"
+          routerLink="/admin">
+          Admin <p class="hidden lg:flex ml-1">Dashboard</p>
+        </button>
+      </div>
+      <!-- Profile menu -->
+      <app-profile-menu></app-profile-menu>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="md:hidden" *ngIf="mobileMenuOpen">
+    <nav class="bg-white py-4 shadow-md">
+      <a routerLink="/" class="block px-6 py-2 text-gray-600 transition duration-300 hover:text-primary">Home</a>
+      <a routerLink="/menu" class="block px-6 py-2 text-gray-600 transition duration-300 hover:text-primary">Menu</a>
+      <a routerLink="/services" class="block px-6 py-2 text-gray-600 transition duration-300 hover:text-primary">Services</a>
+      <a routerLink="/about-us" class="block px-6 py-2 text-gray-600 transition duration-300 hover:text-primary">About us</a>
+      <a routerLink="/contact-us" class="block px-6 py-2 text-gray-600 transition duration-300 hover:text-primary">Contact us</a>
+      <div *ngIf="user$ | async as user">
+        <a
+          *ngIf="user.role !== 'Normal'"
+          class="block px-6 py-2 text-gray-600 transition duration-300 hover:text-primary"
+          routerLink="/admin"
+          >Admin Dashboard</a
+        >
+      </div>
+    </nav>
+  </div>
+</header>
