@@ -1,0 +1,33 @@
+<section class="relative bg-background bg-cover py-8 px-4 cursor-pointer">
+  <div class="relative mx-auto max-w-6xl z-10">
+    <div class="mb-6 flex items-center justify-between">
+      <h2 class="text-2xl font-bold text-dark dark:text-white drop-shadow-lg">Our Featured Categories</h2>
+      <a href="#" class="hover:text-primary-dark text-primary">See all Food →</a>
+    </div>
+    <div class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 ">
+      <div
+        *ngFor="let food of foods"
+        class="group relative shadow-xl shadow-primary transform overflow-hidden rounded-lg transition duration-500 hover:scale-105">
+        <img
+          [src]="food.imageUrl"
+          alt="{{ food.name }}"
+          class="h-84 w-full object-cover rounded-lg transition duration-500 group-hover:brightness-75" />
+        <div class="absolute inset-0 transition duration-500 group-hover:bg-black group-hover:bg-opacity-50 rounded-lg"></div>
+        <div class="absolute inset-x-0 bottom-0 bg-black/30 p-4 backdrop-blur-md rounded-lg">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-bold text-white">{{ food.name }}</h3>
+            <button
+              class="hover:bg-primary-dark rounded bg-primary px-2 py-1 font-bold text-white transition-colors">
+              Order
+            </button>
+          </div>
+          <p class="text-sm text-gray-300">{{ food.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Plate Image -->
+  <div class="absolute -left-24 top-1/2 transform -translate-y-1/2 translate-x-1/2 z-0">
+   <img src="/assets/images/plate.png" alt="Plate" class="h-64 w-auto">
+ </div>
+</section>
