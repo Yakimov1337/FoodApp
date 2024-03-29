@@ -37,9 +37,14 @@ export class Menu {
         },
       ],
     },   {
-      group: 'Settings',
+      group: 'Pages',
       separator: false,
       items: [
+        {
+          icon: 'assets/icons/heroicons/outline/bell.svg',
+          label: 'Home',
+          route: '/',
+        },
         {
           icon: 'assets/icons/heroicons/outline/cog.svg',
           label: 'Account Settings',
