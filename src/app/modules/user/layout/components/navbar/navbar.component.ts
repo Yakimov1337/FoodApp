@@ -37,10 +37,13 @@ export class NavbarComponent {
   @HostListener('window:scroll', [])
   onWindowScroll() {
     this.isScrolled = window.scrollY > 0;
-    console.log(this.isScrolled);
   }
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
+  isMobileMenuVisible(): boolean {
+    return this.mobileMenuOpen;
   }
 }
