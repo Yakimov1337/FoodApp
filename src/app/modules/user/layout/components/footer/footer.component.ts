@@ -9,5 +9,4 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
   templateUrl: './footer.component.html',
 })
 export class FooterComponent {
-
 }
