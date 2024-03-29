@@ -1,0 +1,35 @@
+<div class="relative flex items-center justify-center">
+  <div
+    class="z-10 mx-auto w-full max-w-md overflow-hidden rounded-3xl border-2 border-primary bg-white shadow-md shadow-primary dark:bg-transparent">
+    <div class="mx-auto max-w-md">
+      <!-- Lazy loading image -->
+      <img [src]="item.imageUrl" alt="{{ item.title }}" loading="lazy" class="h-[236px] w-full object-cover" />
+      <div class="flex min-h-[300px] flex-col justify-between p-4 sm:p-6">
+        <p class="mb-1 text-[22px] font-bold leading-7 text-gray-700 dark:text-white">{{ item.title }}</p>
+        <div class="flex flex-row">
+          <p class="mr-2 text-[17px] text-[#3C3C4399] line-through dark:text-white">{{ item.price + 5 | currency }}</p>
+          <p class="text-[17px] font-bold text-[#0FB478]">{{ item.price | currency }}</p>
+        </div>
+        <!-- Scrollable Description Section -->
+        <div [@fadeInOut]="'in'">
+          <p class="font-[15px] text-[#7C7C80] dark:text-white">
+            {{
+              showFullDescription || item.description.length <= 50
+                ? item.description
+                : (item.description | slice: 0:50) + '...'
+            }}
+          </p>
+          <button *ngIf="item.description.length > 50" (click)="toggleDescription()" class="mt-2 text-primary">
+            {{ showFullDescription ? 'Show Less' : 'Read More' }}
+          </button>
+        </div>
+        <a
+          target="_blank"
+          href="foodiesapp://food/1001"
+          class="mt-4 w-full rounded-[14px] bg-primary px-4 py-3 text-center font-medium capitalize tracking-wide text-white transition-colors duration-300 focus:outline-none focus:ring focus:ring-opacity-80 hover:opacity-75">
+          Add to cart
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
