@@ -1,12 +1,14 @@
-<ng-container>
-  <!-- Navigation -->
-  <app-navbar/>
+<div class="flex flex-col min-h-screen">
+  <ng-container>
+    <!-- Navigation -->
+    <app-navbar></app-navbar>
 
+    <!-- Use flex grow so footer is always at the bottom no matter of the content size -->
+    <div class="flex-grow">
+      <router-outlet></router-outlet>
+    </div>
 
-  <router-outlet></router-outlet>
-
-  <!-- USER FOOTER -->
-  <app-footer/>
-</ng-container>
-
-<div ></div>
+    <!-- USER FOOTER -->
+    <app-footer></app-footer>
+  </ng-container>
+</div>
