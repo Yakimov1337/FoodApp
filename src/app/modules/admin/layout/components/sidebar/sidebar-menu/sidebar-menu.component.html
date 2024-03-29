@@ -27,8 +27,10 @@
           <div
             routerLink="{{ item.route }}"
             class="flex h-9 cursor-pointer items-center justify-start rounded text-muted-foreground hover:bg-card hover:text-foreground">
+            <!-- Pass exact to this directive -->
             <a
-              routerLinkActive="text-primary"
+              [routerLinkActive]="['text-primary']"
+              [routerLinkActiveOptions]="{ exact: true }"
               class="ml-10 truncate text-xs font-semibold tracking-wide focus:outline-none">
               {{ item.label }}
             </a>
