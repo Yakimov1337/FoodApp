@@ -1,17 +1,29 @@
 import { Component } from '@angular/core';
 import { ThemeService } from './services/theme.service';
-import { RouterOutlet } from '@angular/router';
-import { NgClass } from '@angular/common';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { CommonModule, NgClass } from '@angular/common';
 import { ResponsiveHelperComponent } from './shared/components/responsive-helper/responsive-helper.component';
+import { Store } from '@ngrx/store';
+import { Observable, filter } from 'rxjs';
+import { selectIsLoading } from './core/state/auth/auth.selectors';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
   standalone: true,
-  imports: [NgClass, RouterOutlet, ResponsiveHelperComponent],
+  imports: [NgClass, RouterOutlet, ResponsiveHelperComponent, CommonModule],
 })
 export class AppComponent {
   title = 'Food Squad';
+  isLoading$: Observable<boolean>;
 
-  constructor(public themeService: ThemeService) {}
+  constructor(public themeService: ThemeService, private store: Store, private router: Router) {
+    this.isLoading$ = this.store.select(selectIsLoading);
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      window.scrollTo(0, 0);
+    });
+  }
+
+
 }
