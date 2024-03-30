@@ -42,9 +42,9 @@ export class OverviewComponent implements OnInit {
   }
   loadMenuItems(page: number, limit: number = 5): void {
     this.isLoading = true;
-    this.menuItemsService.getAllMenuItems(page, limit).subscribe({
+    this.menuItemsService.getTopMenuItemsByOrderCount().subscribe({
       next: (menuItems) => {
-        this.menuItems = menuItems.sort((a, b) => b.orders.length - a.orders.length);
+        this.menuItems = menuItems;
         this.totalPages = Math.ceil(50 / limit); //change later
         this.isLoading = false;
       },
