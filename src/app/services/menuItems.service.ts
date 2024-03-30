@@ -44,7 +44,7 @@ export class MenuItemsService {
       databases.listDocuments(this.databaseId, this.MenuItemsCollectionId, [
         Query.limit(limit),
         Query.offset(offset),
-        Query.orderDesc('$createdAt'),
+        Query.orderAsc('$createdAt'),
       ]),
     ).pipe(
       map((result) => {
@@ -97,6 +97,25 @@ export class MenuItemsService {
       map(() => undefined), // Converting to void
       catchError((error) => {
         console.error('Error deleting MenuItem:', error);
+        throw error;
+      }),
+    );
+  }
+
+  getTopMenuItemsByOrderCount(): Observable<MenuItem[]> {
+    return from(
+      databases.listDocuments(this.databaseId, this.MenuItemsCollectionId)
+    ).pipe(
+      map((result) => {
+        if (!result || !result.documents) throw new Error('No result');
+        const documents: MenuItem[] = result.documents as unknown as MenuItem[];
+        // Sort the documents by the length of their 'orders' array in descending order
+        const sortedDocuments = documents.sort((a, b) => (b.orders?.length || 0) - (a.orders?.length || 0));
+        // Return the top 5 documents
+        return sortedDocuments.slice(0, 5);
+      }),
+      catchError((error) => {
+        console.error('Error fetching MenuItems:', error);
         throw error;
       }),
     );
