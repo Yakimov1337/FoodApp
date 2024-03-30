@@ -26,24 +26,40 @@
 <td class="py-2 text-center">
   <div class="inline-block">
     <!-- Assuming menuItem.isAvailable is the boolean property -->
-    <app-button impact="light" tone="warning" shape="rounded" size="medium">
+    <app-button impact="light"  [tone]="menuItem.default ? 'success' : 'danger'" shape="rounded" size="medium">
       {{ menuItem.default ? 'Yes' : 'No' }}
     </app-button>
   </div>
 </td>
 <td class="py-2  text-center">
   <div class="flex justify-end gap-4">
-    <app-button (click)="openUpdateModal()" impact="light" tone="info" shape="rounded" size="medium" >
+    <app-button
+      *ngIf="currentUser$ | async as currentUser"
+      [ngClass]="{ 'button-disabled': (currentUser.role === 'Moderator' && menuItem.default) }"
+      (click)="handleUpdateButtonClick(currentUser, menuItem)"
+      impact="light"
+      tone="info"
+      shape="rounded"
+      size="medium">
       <div class="flex items-center justify-center space-x-2">
-        <span>Update</span>
+        <span>{{ currentUser.role === 'Admin' || !menuItem.default ? 'Update' : 'Not allowed' }}</span>
         <svg-icon src="assets/icons/heroicons/outline/update.svg"></svg-icon>
       </div>
     </app-button>
-    <app-button (click)="openDeleteModal()"  impact="light" tone="danger" shape="rounded" size="medium">
+
+    <app-button
+      *ngIf="currentUser$ | async as currentUser"
+      [ngClass]="{ 'button-disabled': (currentUser.role === 'Moderator' && menuItem.default) }"
+      (click)="(currentUser.role === 'Admin' || (currentUser.role === 'Moderator' && !menuItem.default)) ? openDeleteModal() : null"
+      impact="light"
+      tone="danger"
+      shape="rounded"
+      size="medium">
       <div class="flex items-center justify-center space-x-2">
-        <span>Delete</span>
+        <span>{{ currentUser.role === 'Admin' || !menuItem.default ? 'Delete' : 'Not allowed' }}</span>
         <svg-icon src="assets/icons/heroicons/outline/delete.svg"></svg-icon>
       </div>
     </app-button>
-  </div>
+</div>
+
 </td>
