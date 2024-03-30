@@ -109,33 +109,36 @@
             </div>
           </div>
           <div class="col-span-2">
-            <label for="menuItems" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >Menu Items</label
-            >
-            <div class="relative">
-              <button
-                type="button"
-                class="focus:ring-primary-500 inline-flex w-full justify-between rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
-                Select Menu Items
-                <svg
-                  class="ml-2 -mr-1 h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  aria-hidden="true">
-                  <path
-                    fill-rule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clip-rule="evenodd" />
-                </svg>
-              </button>
+            <button type="button" class="flex items-center mb-2 text-sm font-medium text-gray-700 dark:text-gray-200" (click)="isMenuItemsDropdownOpen = !isMenuItemsDropdownOpen">
+              Ordered Menu Items
+              <svg [ngClass]="{'rotate-180': isMenuItemsDropdownOpen}" class="ml-2 h-4 w-4 transform transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            <!-- Dropdown container -->
+            <div *ngIf="isMenuItemsDropdownOpen">
+              <ng-container *ngIf="orderedMenuItemTitles$ | async as orderedTitles">
+                <div *ngIf="orderedTitles.length > 0; else noItemsTemplate" class="max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-2 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+                  <ul class="list-disc pl-5">
+                    <li *ngFor="let title of orderedTitles" class="text-gray-900 dark:text-white">{{ title }}</li>
+                  </ul>
+                </div>
+              </ng-container>
+              <ng-template #noItemsTemplate>
+                <div class="border border-gray-200 rounded-lg p-2 bg-gray-50 dark:border-gray-700 dark:bg-gray-800 text-gray-900 dark:text-white">
+                  No ordered menu items.
+                </div>
+              </ng-template>
             </div>
           </div>
+
+
+
           <div class="col-span-2">
             <button
               type="submit"
               class="inline-flex items-center rounded-lg bg-primary px-5 py-2.5 text-center text-sm font-medium text-white">
-  
+
               Update
             </button>
           </div>

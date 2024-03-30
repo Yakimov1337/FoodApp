@@ -1,16 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { MenuItem, Order, User } from '../../../../../../core/models';
+import { Observable, of } from 'rxjs';
+import { User } from '../../../../../../core/models';
 import { selectOrderToUpdate } from '../../../../../../core/state/modal/order/modal.selectors';
 import { closeUpdateOrderModal } from '../../../../../../core/state/modal/order/modal.actions';
 import { OrdersService } from '../../../../../../services/orders.service';
-import { MenuItemsService } from '../../../../../../services/menuItems.service';
 import { UserService } from '../../../../../../services/user.service';
 import { CommonModule, formatDate } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
-import { asyncSimpleDateValidator } from '../../../../../../shared/validators/date-format-validator';
 
 @Component({
   selector: '[order-update-modal]',
@@ -20,8 +18,10 @@ import { asyncSimpleDateValidator } from '../../../../../../shared/validators/da
 })
 export class OrderUpdateModalComponent implements OnInit {
   orderForm: FormGroup;
-  menuItems$: Observable<MenuItem[]>;
   users$: Observable<User[]>;
+  isMenuItemsDropdownOpen: boolean = false;
+  orderedMenuItemTitles$: Observable<string[]> = of([]);
+
   private currentOrderId: string | null = null;
 
   constructor(
@@ -29,20 +29,17 @@ export class OrderUpdateModalComponent implements OnInit {
     private store: Store,
     private ordersService: OrdersService,
     private userService: UserService,
-    private menuItemsService: MenuItemsService,
     private toastr: ToastrService,
   ) {
-    // Initialize the form with structure
+    // Initialize the form 
     this.orderForm = this.fb.group({
       user: ['', Validators.required],
-      totalCost: ['',[Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
+      totalCost: ['', [Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
       createdOn: ['', Validators.required],
       status: ['', Validators.required],
       paid: [false, Validators.required],
       menuItems: this.fb.array([]),
     });
-
-    this.menuItems$ = this.menuItemsService.getAllMenuItems();
     this.users$ = this.userService.getAllUsers();
   }
 
@@ -50,14 +47,16 @@ export class OrderUpdateModalComponent implements OnInit {
     this.store.select(selectOrderToUpdate).subscribe((order) => {
       if (order) {
         this.currentOrderId = order.$id;
-        const formattedCreatedOn = formatDate(order.createdOn, 'yyyy-MM-dd', 'en-US');
         this.orderForm.patchValue({
           user: order.user?.$id,
           totalCost: order.totalCost,
           paid: order.paid,
-          createdOn: formattedCreatedOn,
+          createdOn: formatDate(order.createdOn, 'yyyy-MM-dd', 'en-US'),
           status: order.status,
         });
+
+        // Directly extract the titles from the order object
+        this.orderedMenuItemTitles$ = of(order.menuItems.map((item) => item.title));
       }
     });
   }
@@ -67,7 +66,7 @@ export class OrderUpdateModalComponent implements OnInit {
       this.ordersService.updateOrder(this.currentOrderId, this.orderForm.value).subscribe({
         next: (order) => {
           this.closeModal();
-          this.ordersService.orderCreated(order); //Notify about order update
+          this.ordersService.orderUpdated(order); //Notify about order update
           this.toastr.success('Order updated successfully!');
         },
         error: (error) => this.toastr.error('Error updating this order:', error),
