@@ -20,6 +20,7 @@ export class OrderCreateModalComponent {
   orderForm: FormGroup;
   users$: Observable<User[]> = of([]); //initial value
   menuItems$!: Observable<MenuItem[]>;
+  isMenuItemsDropdownOpen: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -32,25 +33,23 @@ export class OrderCreateModalComponent {
     const currentDate = new Date().toISOString().split('T')[0];
     this.orderForm = this.fb.group({
       user: ['', Validators.required],
-      menuItems: new FormArray([]),
       totalCost: [1, [Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
       createdOn: [currentDate],
+      menuItems: this.fb.array([]),
       paid: [false, Validators.required],
       status: ['pending', Validators.required],
     });
   }
   ngOnInit() {
     this.users$ = this.userService.getAllUsers();
-    // this.menuItems$ = this.menuItemsService.getAllMenuItems();
+    this.menuItems$ = this.menuItemsService.getAllMenuItems(1, 100);
   }
 
   // Function to handle form submission
   createOrder(): void {
     if (this.orderForm.valid) {
-      const orderData = {
-        ...this.orderForm.value,
-        menuItems: this.orderForm.value.menuItems.map((control: FormControl) => control.value),
-      };
+      const orderData = this.orderForm.value;
+
       this.orderService.createOrder(orderData).subscribe({
         next: (order: Order) => {
           this.closeModal();
@@ -70,6 +69,20 @@ export class OrderCreateModalComponent {
           this.toastr.error(`Form Invalid - control: ${key}, Error: ${keyError}`);
         });
       });
+    }
+  }
+
+  onMenuItemSelected(event: Event, menuItemId: string): void {
+    const inputElement = event.target as HTMLInputElement;
+    const menuItemsFormArray = this.orderForm.get('menuItems') as FormArray;
+
+    if (inputElement.checked) {
+      menuItemsFormArray.push(new FormControl(menuItemId));
+    } else {
+      const index = menuItemsFormArray.controls.findIndex(control => control.value === menuItemId);
+      if (index !== -1) {
+        menuItemsFormArray.removeAt(index);
+      }
     }
   }
 
