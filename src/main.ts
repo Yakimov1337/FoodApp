@@ -16,6 +16,8 @@ import { authReducer } from './app/core/state/auth/auth.reducer';
 import { AuthEffects } from './app/core/state/auth/auth.effects';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './app/core/interceptor/interceptor';
+import { cartReducer } from './app/core/state/shopping-cart/cart.reducer';
+import { CartEffects } from './app/core/state/shopping-cart/cart.effects';
 
 if (environment.production) {
   enableProdMode();
@@ -35,6 +37,7 @@ const initialReducers = {
   orderModals: orderModalReducer,
   menuItemModals: menuItemsModalReducer,
   auth: authReducer,
+  cart: cartReducer,
 };
 
 bootstrapApplication(AppComponent, {
@@ -44,7 +47,7 @@ bootstrapApplication(AppComponent, {
     provideToastr(),
     provideAnimations(),
     provideStore(initialReducers),
-    provideEffects([AuthEffects]),
+    provideEffects([AuthEffects,CartEffects]),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     {
       provide: APP_INITIALIZER,
