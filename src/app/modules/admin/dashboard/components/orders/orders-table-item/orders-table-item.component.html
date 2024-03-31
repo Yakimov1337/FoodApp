@@ -28,15 +28,16 @@
 </td>
 <td class="py-2 text-center">
   <div class="inline-block">
-    <app-button impact="light" tone="success" shape="rounded" size="medium">{{
-      order.totalCost | currency
-    }}</app-button>
+    <app-button impact="light" tone="success" shape="rounded" size="medium"
+      >
+      {{ order.totalCost | currency:'USD':'symbol':'1.0-0' }}
+    </app-button>
   </div>
 </td>
 <td class="py-2 text-center">
   <div class="inline-block">
     <!-- Assuming menuItem.isAvailable is the boolean property -->
-    <app-button impact="light"   [tone]="order.paid ? 'success' : 'danger'"  shape="rounded" size="medium">
+    <app-button impact="light" [tone]="order.paid ? 'success' : 'danger'" shape="rounded" size="medium">
       {{ order.paid ? 'Yes' : 'No' }}
     </app-button>
   </div>
