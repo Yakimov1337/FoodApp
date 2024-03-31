@@ -10,3 +10,14 @@ export interface Order {
   paid: boolean,
   status: 'pending' | 'completed' | 'cancelled';
 }
+
+
+// New OrderSubmission model for API submission
+export interface OrderSubmission {
+  user: string; // User ID as a string
+  menuItems: string[]; // Array of MenuItem IDs as strings
+  totalCost: number;
+  createdOn: string;
+  paid: boolean;
+  status: 'pending' | 'completed' | 'cancelled';
+}
