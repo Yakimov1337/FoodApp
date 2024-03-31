@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { trigger, state, style, animate, transition } from '@angular/animations';
@@ -16,7 +16,7 @@ import { ThemeService } from '../../../../../../services/theme.service';
   selector: 'app-profile-menu',
   templateUrl: './profile-menu.component.html',
   standalone: true,
-  imports: [ClickOutsideDirective, NgClass, RouterLink, AngularSvgIconModule, CommonModule],
+  imports: [ClickOutsideDirective, NgClass, RouterLink, AngularSvgIconModule, CommonModule,RouterModule],
   animations: [
     trigger('openClose', [
       state(
