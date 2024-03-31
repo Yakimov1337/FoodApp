@@ -6,6 +6,8 @@ import { Observable } from 'rxjs';
 import { User } from '../../../../../core/models';
 import { Store, select } from '@ngrx/store';
 import { selectCurrentUser } from '../../../../../core/state/auth/auth.selectors';
+import { CartVisibilityService } from '../../../../../services/cart-visibility.service';
+import { selectCartItemCount } from '../../../../../core/state/shopping-cart/cart.selectors';
 
 @Component({
   selector: 'app-navbar',
@@ -17,9 +19,10 @@ export class NavbarComponent {
   private mainContent: HTMLElement | null = null;
   isScrolled = false;
   mobileMenuOpen = false;
+  cartItemCount$: Observable<number>;
   user$: Observable<User | null>;
 
-  constructor(private router: Router, private store: Store) {
+  constructor(private router: Router, private store: Store, private cartVisibilityService: CartVisibilityService) {
     this.router.events.subscribe((event: Event) => {
       if (event instanceof NavigationEnd) {
         if (this.mainContent) {
@@ -28,6 +31,7 @@ export class NavbarComponent {
       }
     });
     this.user$ = this.store.pipe(select(selectCurrentUser));
+    this.cartItemCount$ = this.store.select(selectCartItemCount);
   }
 
   ngOnInit(): void {
@@ -45,5 +49,9 @@ export class NavbarComponent {
 
   isMobileMenuVisible(): boolean {
     return this.mobileMenuOpen;
+  }
+
+  toggleCart(): void {
+    this.cartVisibilityService.toggleCart();
   }
 }
