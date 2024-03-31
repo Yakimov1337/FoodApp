@@ -17,7 +17,34 @@
       </div>
     </app-button>
   </div>
+  <div class=" md:flex gap-4 mb-2">
+    <!-- Category Filter Dropdown -->
+    <select [(ngModel)]="categoryFilter" (ngModelChange)="applyFiltersAndSorting()" class="border-2 border-primary/50">
+      <option value="">All Categories</option>
+      <option [value]="'Pizza'">Pizza</option>
+      <option [value]="'Burger'">Burger</option>
+      <option [value]="'Pasta'">Pasta</option>
+      <option [value]="'Sushi'">Sushi</option>
+      <option [value]="'Salad'">Salad</option>
+      <option [value]="'Tacos'">Tacos</option>
+      <option [value]="'Dessert'">Dessert</option>
+      <option [value]="'Other'">Other</option>
+    </select>
 
+    <!-- Price Sort Dropdown -->
+    <select [(ngModel)]="priceSortDirection" (ngModelChange)="applyFiltersAndSorting()" class="border-2 border-primary/50">
+      <option value="">Sort by price</option>
+      <option value="asc">Ascending</option>
+      <option value="desc">Descending</option>
+    </select>
+
+    <!-- Default Filter Dropdown -->
+    <select [(ngModel)]="defaultFilter" (ngModelChange)="applyFiltersAndSorting()" class="border-2 border-primary/50">
+      <option value="all">All (defaults)</option>
+      <option value="yes">Default</option>
+      <option value="no">Non-default</option>
+    </select>
+  </div>
   <div class="relative overflow-x-auto">
     <div *ngIf="isLoading" class="mx-auto p-48">
       <app-loader></app-loader>
@@ -49,8 +76,8 @@
     <p *ngIf="!isLoading && menuItems.length === 0" class="mx-auto p-12 text-center text-foreground">
       No items available
     </p>
-      <!-- Pagination -->
-      <app-pagination
+    <!-- Pagination -->
+    <app-pagination
       class="mx-auto"
       [currentPage]="currentPage"
       [totalPages]="totalPages"

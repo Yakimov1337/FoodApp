@@ -11,6 +11,7 @@ import { openCreateMenuItemModal } from '../../../../../../core/state/modal/menu
 import { Store } from '@ngrx/store';
 import { PaginationComponent } from '../../../../../../shared/components/pagination/pagination.component';
 import { ToastrService } from 'ngx-toastr';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: '[menuItem-auctions-table]',
@@ -24,6 +25,7 @@ import { ToastrService } from 'ngx-toastr';
     CommonModule,
     LoaderComponent,
     PaginationComponent,
+    FormsModule
   ],
 })
 export class MenuItemAuctionsTableComponent implements OnInit {
@@ -33,6 +35,10 @@ export class MenuItemAuctionsTableComponent implements OnInit {
   public totalPages!: number;
   public timeSinceLastUpdate$!: Observable<number>;
   public lastUpdated: Date = new Date();
+  public categoryFilter: string = '';
+  public priceSortDirection: string = '';
+  public defaultFilter: string = 'all';
+  public originalMenuItems: MenuItem[] = [];
 
   private subscriptions: Subscription = new Subscription();
 
@@ -52,8 +58,9 @@ export class MenuItemAuctionsTableComponent implements OnInit {
     this.isLoading = true;
     this.menuItemsService.getAllMenuItems(page, limit).subscribe({
       next: (menuItems) => {
-        this.menuItems = menuItems;
-        this.totalPages = Math.ceil(50 / limit); //change later
+        this.originalMenuItems = menuItems;
+        this.menuItems = [...this.originalMenuItems]; // Copy for display purposes
+        this.totalPages = Math.ceil(100 / limit); //change later
         this.isLoading = false;
       },
       error: (error) => {
@@ -98,5 +105,24 @@ export class MenuItemAuctionsTableComponent implements OnInit {
     });
     this.subscriptions.add(menuItemsCreatedSub);
     this.subscriptions.add(menuItemsDeletedSub);
+  }
+
+  applyFiltersAndSorting(): void {
+    let filteredItems = [...this.originalMenuItems]; // Start with a copy of the original
+
+    if (this.categoryFilter && this.categoryFilter !== 'All') {
+      filteredItems = filteredItems.filter(item => item.category === this.categoryFilter);
+    }
+
+    if (this.defaultFilter !== 'all') {
+      const isDefault = this.defaultFilter === 'yes';
+      filteredItems = filteredItems.filter(item => item.default === isDefault);
+    }
+
+    if (this.priceSortDirection) {
+      filteredItems.sort((a, b) => this.priceSortDirection === 'asc' ? a.price - b.price : b.price - a.price);
+    }
+
+    this.menuItems = filteredItems; // Update menuItems for display
   }
 }
