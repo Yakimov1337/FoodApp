@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { ThemeService } from './services/theme.service';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { CommonModule, NgClass } from '@angular/common';
-import { ResponsiveHelperComponent } from './shared/components/responsive-helper/responsive-helper.component';
 import { Store } from '@ngrx/store';
 import { Observable, filter } from 'rxjs';
 import { selectIsLoading } from './core/state/auth/auth.selectors';
@@ -10,7 +9,7 @@ import { selectIsLoading } from './core/state/auth/auth.selectors';
   selector: 'app-root',
   templateUrl: './app.component.html',
   standalone: true,
-  imports: [NgClass, RouterOutlet, ResponsiveHelperComponent, CommonModule],
+  imports: [NgClass, RouterOutlet, CommonModule],
 })
 export class AppComponent {
   title = 'Food Squad';
