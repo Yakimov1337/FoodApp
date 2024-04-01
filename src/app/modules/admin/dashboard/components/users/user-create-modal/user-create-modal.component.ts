@@ -30,7 +30,7 @@ export class UserCreateModalComponent {
       password: ['', [Validators.required, Validators.minLength(8)]],
       name: [''],
       role: ['Normal', Validators.required],
-      phoneNumber: ['',Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)],
+      phoneNumber: ['', Validators.pattern(/^\+?[0-9]{1,3}?[-\s]?([0-9]{1,4}[-\s]?)*$/)],
       imageUrl: [''],
     });
   }
