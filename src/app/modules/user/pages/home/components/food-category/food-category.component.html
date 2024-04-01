@@ -12,7 +12,8 @@
         <img
           [src]="food.imageUrl"
           alt="{{ food.name }}"
-          class="h-84 w-full rounded-lg object-cover transition duration-500 group-hover:brightness-75" />
+          loading="lazy"
+          class="max-h-72 w-full rounded-lg object-cover transition duration-500 group-hover:brightness-75" />
         <div
           class="absolute inset-0 rounded-lg transition duration-500 group-hover:bg-black group-hover:bg-opacity-50"></div>
         <div class="absolute inset-x-0 bottom-0 rounded-lg bg-black/30 p-4 backdrop-blur-md">
@@ -34,9 +35,13 @@
     </div>
   </div>
   <!-- Plate Image -->
-  <div class="absolute -left-24 top-1/2 z-0 -translate-y-1/2 translate-x-1/2 transform">
+  <div class="absolute left-32 top-24 z-0 -translate-y-1/2 translate-x-2/3 transform">
     <img src="/assets/images/plate.png" alt="Plate" class="h-64 w-auto" />
   </div>
+    <!-- Plate Image -->
+    <div class="absolute right-64 top-1/2 z-0 translate-y-1/2 translate-x-1/2 transform">
+      <img src="/assets/images/macaron.png" alt="Plate" class="h-64 w-auto" />
+    </div>
 </section>
 <div class="relative flex items-center py-5">
   <div class="flex-grow border-t border-primary"></div>
