@@ -48,7 +48,7 @@ export class Menu {
         {
           icon: 'assets/icons/heroicons/outline/cog.svg',
           label: 'Account Settings',
-          route: '/admin/settings',
+          route: '/profile',
         },
       ],
     },
