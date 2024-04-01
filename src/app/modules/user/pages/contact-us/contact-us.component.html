@@ -1,11 +1,20 @@
-<!-- Container for demo purpose -->
-<div class="mx-auto h-full w-full bg-background py-24 md:px-6">
-  <!-- Section: Design Block -->
-  <section class="mb-32 p-8">
+<div class="bg-white dark:bg-background min-h-screen">
+  <section class="body-font relative overflow-hidden pb-12">
+    <!-- Background with opacity -->
     <div
-      class="mx-auto mb-8 max-w-screen-md rounded-lg border-2 border-primary py-8 px-4 shadow-lg shadow-primary lg:py-16">
-      <h2 class="mb-4 text-center text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">Contact Us</h2>
-      <p class="mb-8 text-center font-light text-gray-500 dark:text-gray-400 sm:text-xl lg:mb-16">
+      class="absolute inset-0 z-0"
+      style="
+        background-image: url('./assets/images/menu-background.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+      ">
+      <div class="absolute inset-0 bg-black opacity-50"></div>
+    </div>
+    <div
+      class="container bg-background/50 relative mt-32  z-10 mx-auto mb-8 max-w-screen-md rounded-lg border-2 border-primary py-8 px-4 shadow-lg shadow-primary ">
+      <h2 class="mb-4 text-center text-4xl font-extrabold tracking-tight text-white">Contact Us</h2>
+      <p class="mb-8 text-center font-light text-white sm:text-xl lg:mb-16">
         Got a technical issue? Want to send feedback about a beta feature? Need details about our Business plan? Let us
         know.
       </p>
@@ -48,7 +57,7 @@
       </form>
     </div>
     <div
-      class="mx-auto block max-w-screen-xl rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700">
+      class="relative z-10 mx-auto block max-w-screen-xl rounded-lg bg-background/50 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
       <div class="flex flex-wrap items-center">
         <div class="block w-full shrink-0 grow-0 basis-auto lg:flex lg:w-6/12 xl:w-4/12">
           <div class="h-[500px] w-full">
