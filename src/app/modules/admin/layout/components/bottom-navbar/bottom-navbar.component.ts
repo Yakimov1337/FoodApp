@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 
 @Component({
@@ -6,7 +7,7 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
     templateUrl: './bottom-navbar.component.html',
     styleUrls: ['./bottom-navbar.component.scss'],
     standalone: true,
-    imports: [AngularSvgIconModule],
+    imports: [AngularSvgIconModule,RouterLink],
 })
 export class BottomNavbarComponent implements OnInit {
   constructor() {}
