@@ -11,7 +11,6 @@ export interface User {
   phoneNumber: string;
   role: Role;
   orders: Order[];
-  menuItems: MenuItem[];
 }
 export interface AuthState {
   isAuthenticated: boolean;
