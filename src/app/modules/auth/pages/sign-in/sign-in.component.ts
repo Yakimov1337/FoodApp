@@ -70,12 +70,12 @@ export class SignInComponent implements OnInit {
       next: () => {
         // User is successfully authenticated, dispatch the login action
         this.store.dispatch(AuthActions.login());
-        (this as any)[`isLoading${type.charAt(0).toUpperCase() + type.slice(1)}`] = false; // Converts to camelCase
+        // (this as any)[`isLoading${type.charAt(0).toUpperCase() + type.slice(1)}`] = false; // makes spinner stops too early
       },
       error: (error) => {
         console.error('Error signing in:', error);
         this.toastr.error('Login failed.', error);
-        (this as any)[`isLoading${type.charAt(0).toUpperCase() + type.slice(1)}`] = false;
+        (this as any)[`isLoading${type.charAt(0).toUpperCase() + type.slice(1)}`] = false; // Converts to camelCase isLoading admin or user or mod
       },
     });
   }
