@@ -44,7 +44,7 @@ export class MenuItemsService {
       databases.listDocuments(this.databaseId, this.MenuItemsCollectionId, [
         Query.limit(limit),
         Query.offset(offset),
-        Query.orderAsc('$createdAt'),
+        Query.orderDesc('$createdAt'),
       ]),
     ).pipe(
       map((result) => {
@@ -104,7 +104,7 @@ export class MenuItemsService {
 
   getTopMenuItemsByOrderCount(): Observable<MenuItem[]> {
     return from(
-      databases.listDocuments(this.databaseId, this.MenuItemsCollectionId)
+      databases.listDocuments(this.databaseId, this.MenuItemsCollectionId,[ Query.limit(100)])
     ).pipe(
       map((result) => {
         if (!result || !result.documents) throw new Error('No result');
