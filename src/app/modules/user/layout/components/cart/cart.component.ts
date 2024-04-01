@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { OrdersService } from '../../../../../services/orders.service';
 import { selectCurrentUser } from '../../../../../core/state/auth/auth.selectors';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 interface CartItem extends MenuItem {
   quantity: number;
@@ -49,6 +50,7 @@ export class CartComponent implements OnInit {
     public cartVisibilityService: CartVisibilityService,
     private ordersService: OrdersService,
     private toastr: ToastrService,
+    private router: Router
   ) {
     //Workaround for quantity issues, this ensures proper total order value
     // Subscribe to the cart items
@@ -121,6 +123,7 @@ export class CartComponent implements OnInit {
                 this.toastr.success('Order placed successfully!');
                 this.store.dispatch(clearCart());
                 this.cartVisibilityService.toggleCart()
+                this.router.navigate(['/orders']);
             },
             error: (error) => {
                 console.error('Failed to place an order', error);
