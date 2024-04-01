@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { MenuItem } from '../../../../../../core/models';
 import { ButtonComponent } from '../../../../../../shared/components/button/button.component';
@@ -13,7 +13,7 @@ import {
   selector: '[menuItem-overview-table-item]',
   templateUrl: './menuItem-overview-table-item.component.html',
   standalone: true,
-  imports: [AngularSvgIconModule, CurrencyPipe, ButtonComponent],
+  imports: [AngularSvgIconModule, CurrencyPipe, ButtonComponent,CommonModule],
 })
 export class MenuItemOverviewTableItemComponent implements OnInit {
   @Input() menuItem: MenuItem = <MenuItem>{};
