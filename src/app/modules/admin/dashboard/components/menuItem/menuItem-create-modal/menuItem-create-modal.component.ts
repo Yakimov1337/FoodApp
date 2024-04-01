@@ -17,7 +17,7 @@ import { ToastrService } from 'ngx-toastr';
 export class MenuItemCreateModalComponent {
   menuItemForm: FormGroup;
   defaultImageUrl: URL = new URL(
-    'https://pngfile.net/public/uploads/preview/veg-burger-png-image-11703408255gkuhjrek36.png',
+    'https://w0.peakpx.com/wallpaper/97/150/HD-wallpaper-mcdonalds-double-cheese-burger-double-mcdonalds-cheese-burger-thumbnail.jpg',
   );
 
   constructor(
