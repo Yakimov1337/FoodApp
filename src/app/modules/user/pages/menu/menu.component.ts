@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MenuItem } from '../../../../core/models';
 import { MenuItemsService } from '../../../../services/menuItems.service';
 import { FoodCardComponent } from './food-card/food-card.component';
 import { FoodCategoryComponent } from './food-category/food-category.component';
 import { LoaderComponent } from '../../../../shared/components/loader/loader.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -15,30 +15,40 @@ import { Subscription } from 'rxjs';
   templateUrl: './menu.component.html',
 })
 export class MenuComponent implements OnInit, OnDestroy {
+  @ViewChild('menuItemsContainer') menuItemsContainer?: ElementRef;
   allMenuItems: MenuItem[] = [];
-  menuItems: MenuItem[] = [];
+  displayMenuItems: MenuItem[] = [];
   isLoading = true;
   selectedCategory: string = 'burger';
-  private queryParamsSubscription: Subscription | null = null;
+  lastCategory: string = 'burger';
+  itemsPerPage = 6; // Number of items to load
+  currentPage = 1;
 
-  constructor(private menuItemsService: MenuItemsService, private route: ActivatedRoute, private router: Router) {}
+  private queryParamsSubscription!: Subscription;
+
+  constructor(private menuItemsService: MenuItemsService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    // Listen to category changes from URL and adjust displayed items accordingly
-    this.queryParamsSubscription = this.route.queryParams.subscribe((params) => {
-      if (params['category']) {
-        // If there's a category in the URL, use it
-        this.selectedCategory = params['category'];
-      } else {
-        // If not, navigate to the URL with the default category as a query param
-        this.router.navigate(['/menu'], { queryParams: { category: this.selectedCategory } });
+    // Listen for any changes in the URL query parameters.
+    this.route.queryParams.subscribe((params) => {
+      // Check if the 'category' parameter from the URL has changed.
+      // 'categoryChanged' is true if there's a new category in the URL different from the current one.
+      const categoryChanged = params['category'] && this.selectedCategory !== params['category'];
+
+      // If the category has changed or if not loaded any menu items yet,
+      // need to update our menu items based on the new category.
+      if (categoryChanged || !this.allMenuItems.length) {
+        // Set the selected category to the new one from the URL.
+        // If there's no category in the URL, keep the current category. (burger by default)
+        this.selectedCategory = params['category'] || this.selectedCategory;
+        this.fetchMenuItems();
       }
-      this.fetchMenuItems();
     });
   }
 
   fetchMenuItems(): void {
-    if (!this.allMenuItems.length) { // Check if items have already been fetched
+    if (!this.allMenuItems.length) {
+      // Check if items have already been fetched
       this.isLoading = true;
       this.menuItemsService.getAllMenuItems(1, 100).subscribe({
         next: (items) => {
@@ -57,21 +67,42 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
   }
 
-  onCategorySelected(category: string): void {
-    this.selectedCategory = category;
-    this.filterItemsByCategory();
-    this.router.navigate(['/menu'], { queryParams: { category: this.selectedCategory.toLowerCase() } });
-  }
-  private filterItemsByCategory(): void {
-    this.menuItems = this.allMenuItems.filter(
+  filterItemsByCategory(): void {
+    // w/o this, while changing categories displayItems count will be same until page refresh
+    if (this.lastCategory !== this.selectedCategory) {
+      // Reset currentPage if the category has changed
+      this.currentPage = 1;
+      this.lastCategory = this.selectedCategory;
+    }
+
+    const filteredItems = this.allMenuItems.filter(
       (item) => item.category.toLowerCase() === this.selectedCategory.toLowerCase(),
     );
+
+    // Only show items up to the current page
+    //creates a new array rather than mutating it
+    this.displayMenuItems = [...filteredItems.slice(0, this.currentPage * this.itemsPerPage)];
+  }
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll(): void {
+    // Calculate the distance from the top of the page to the bottom of the viewport
+    const distanceFromTopToBottom = window.innerHeight + window.scrollY;
+    // Calculate the threshold for triggering the event (95% of the document height)
+    const scrollThreshold = document.body.offsetHeight * 0.95;
+
+    // Check if we're at 95% of the bottom of the page
+    if (distanceFromTopToBottom >= scrollThreshold) {
+      this.loadMoreItems();
+    }
+  }
+
+  loadMoreItems(): void {
+    this.currentPage++;
+    this.filterItemsByCategory();
   }
 
   ngOnDestroy(): void {
     // Unsubscribe to prevent memory leaks
-    if (this.queryParamsSubscription) {
-      this.queryParamsSubscription.unsubscribe();
-    }
+    this.queryParamsSubscription?.unsubscribe();
   }
 }
