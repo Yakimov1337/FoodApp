@@ -44,7 +44,6 @@ export class AuthService {
           role: Role.Normal,
           imageUrl: user.imageUrl && isValidUrl(user.imageUrl) ? user.imageUrl : avatarUrl,
           orders: [],
-          menuItems: [],
         };
 
         return this.saveUserToDB(newUser); // Return the saveUserToDB observable
@@ -102,12 +101,35 @@ export class AuthService {
   // Sign in account
   signInAccount(email: string, password: string): Observable<any> {
     return from(account.createEmailSession(email, password)).pipe(
-      catchError((error) => {
-        return throwError(() => error);
-      }),
+        switchMap(session => {
+            // Authentication was successful. Now, check if the user exists in the custom database.
+            return this.checkUserExistsInDB(session.userId).pipe(
+                map(user => {
+                    // If this point is reached, the user exists in DB, and can proceed.
+                    return user;
+                }),
+                catchError(() => {
+                    // The user was not found in the custom database. Restrict the sign-in.
+                    // This is triggered when user acc is deleted from users table but exists in Appwrite Auth table
+                    return throwError(() => new Error('This account email is restricted from signing in.'));
+                })
+            );
+        }),
+        catchError(error => {
+            return throwError(() => error);
+        }),
     );
-  }
-
+}
+private checkUserExistsInDB(userId: string): Observable<User> {
+  return from(databases.listDocuments(this.databaseId, this.usersCollectionId, [Query.equal('accountId', userId)])).pipe(
+      map(response => {
+          if (response.documents.length === 0) {
+              throw new Error('User not found in database');
+          }
+          return response.documents[0] as unknown as User;
+      })
+  );
+}
   // Sign out account
   signOutAccount(): Observable<any> {
     return from(account.deleteSession('current')).pipe(
