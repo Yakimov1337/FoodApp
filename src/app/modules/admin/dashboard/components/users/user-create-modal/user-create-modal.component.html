@@ -27,10 +27,17 @@
         <div class="mb-4 grid grid-cols-2 gap-4">
           <div class="col-span-2">
             <div
-              *ngIf="userForm.get('email')?.errors?.['required'] && userForm.get('email')?.touched; else emailLabel"
+              *ngIf="userForm.get('email')?.errors?.['pattern'] && userForm.get('email')?.touched; else emailRequired"
               class="mb-2 block text-sm font-medium text-red-500">
-              Email is required
+              Must be a valid email
             </div>
+            <ng-template #emailRequired>
+              <div
+                *ngIf="userForm.get('email')?.errors?.['required'] && userForm.get('email')?.touched; else emailLabel"
+                class="mb-2 block text-sm font-medium text-red-500">
+                Email is required
+              </div>
+            </ng-template>
             <ng-template #emailLabel>
               <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                 Email <span class="text-red-500">*</span>
@@ -88,10 +95,11 @@
             >
             <select
               formControlName="role"
+              *ngIf="currentUser$ | async as currentUser"
               id="role"
               class="focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400">
               <option value="Normal">Normal</option>
-              <option value="Admin">Admin</option>
+              <option disabled="currentUser.role !=='Admin'" value="Admin">Admin</option>
               <option value="Moderator">Moderator</option>
             </select>
           </div>

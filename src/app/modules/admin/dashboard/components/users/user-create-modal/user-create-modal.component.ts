@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { CommonModule } from '@angular/common';
 import { User } from '../../../../../../core/models';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -7,7 +7,8 @@ import { closeCreateUserModal } from '../../../../../../core/state/modal/user/mo
 import { AuthService } from '../../../../../../services/auth.service';
 import { UserService } from '../../../../../../services/user.service';
 import { ToastrService } from 'ngx-toastr';
-import { urlFormValidator } from '../../../../../../shared/validators/url-validator';
+import { Observable } from 'rxjs';
+import { selectCurrentUser } from '../../../../../../core/state/auth/auth.selectors';
 
 @Component({
   selector: '[user-create-modal]',
@@ -17,6 +18,7 @@ import { urlFormValidator } from '../../../../../../shared/validators/url-valida
 })
 export class UserCreateModalComponent {
   userForm: FormGroup;
+  currentUser$: Observable<User | null>;
 
   constructor(
     private fb: FormBuilder,
@@ -25,8 +27,9 @@ export class UserCreateModalComponent {
     private userService: UserService,
     private toastr: ToastrService,
   ) {
+    this.currentUser$ = this.store.pipe(select(selectCurrentUser));
     this.userForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required,  Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       name: [''],
       role: ['Normal', Validators.required],
@@ -38,6 +41,7 @@ export class UserCreateModalComponent {
   // Function to handle form submission
   createUser(): void {
     if (this.userForm.valid) {
+      console.log(this.userForm.value)
       this.authService.createUserAccount(this.userForm.value).subscribe({
         next: (user: User) => {
           this.closeModal();

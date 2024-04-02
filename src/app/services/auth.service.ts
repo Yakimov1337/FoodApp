@@ -24,6 +24,7 @@ export class AuthService {
     password: string;
     name?: string;
     phoneNumber?: string;
+    role?: Role;
     imageUrl?: URL;
   }): Observable<User> {
     return from(account.create(ID.unique(), user.email, user.password)).pipe(
@@ -41,7 +42,7 @@ export class AuthService {
           name: user.name ?? '',
           phoneNumber: user.phoneNumber ?? '',
           email: newAccount.email,
-          role: Role.Normal,
+          role: user.role ?? Role.Normal,
           imageUrl: user.imageUrl && isValidUrl(user.imageUrl) ? user.imageUrl : avatarUrl,
           orders: [],
         };
