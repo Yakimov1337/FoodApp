@@ -31,7 +31,7 @@ export class OrderUpdateModalComponent implements OnInit {
     private userService: UserService,
     private toastr: ToastrService,
   ) {
-    // Initialize the form 
+    // Initialize the form
     this.orderForm = this.fb.group({
       user: ['', Validators.required],
       totalCost: ['', [Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
@@ -63,7 +63,14 @@ export class OrderUpdateModalComponent implements OnInit {
 
   updateOrder(): void {
     if (this.orderForm.valid && this.currentOrderId) {
-      this.ordersService.updateOrder(this.currentOrderId, this.orderForm.value).subscribe({
+      const orderData = this.orderForm.value;
+
+      // Convert 'createdOn' to ISO 8601 format (YYYY-MM-DD) (Appwrite problems...)
+      const dateParts = orderData.createdOn.split('/');
+      if (dateParts.length === 3) {
+        orderData.createdOn = `20${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
+      }
+      this.ordersService.updateOrder(this.currentOrderId, orderData).subscribe({
         next: (order) => {
           this.closeModal();
           this.ordersService.orderUpdated(order); //Notify about order update

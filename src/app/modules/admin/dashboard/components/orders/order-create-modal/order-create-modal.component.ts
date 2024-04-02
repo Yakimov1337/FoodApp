@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { CommonModule } from '@angular/common';
 import { MenuItem, Order, User } from '../../../../../../core/models';
-import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormControl, FormArray, ValidatorFn, AbstractControl } from '@angular/forms';
 import { OrdersService } from '../../../../../../services/orders.service';
 import { closeCreateOrderModal } from '../../../../../../core/state/modal/order/modal.actions';
 import { UserService } from '../../../../../../services/user.service';
@@ -30,11 +30,12 @@ export class OrderCreateModalComponent {
     private store: Store,
     private toastr: ToastrService,
   ) {
+
     const currentDate = new Date().toISOString().split('T')[0];
     this.orderForm = this.fb.group({
       user: ['', Validators.required],
       totalCost: [1, [Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
-      createdOn: [currentDate],
+      createdOn: [currentDate, [Validators.required]],
       menuItems: this.fb.array([]),
       paid: [false, Validators.required],
       status: ['pending', Validators.required],
@@ -50,6 +51,11 @@ export class OrderCreateModalComponent {
     if (this.orderForm.valid) {
       const orderData = this.orderForm.value;
 
+      // Convert 'createdOn' to ISO 8601 format (YYYY-MM-DD) (Appwrite problems...)
+      const dateParts = orderData.createdOn.split('/');
+      if (dateParts.length === 3) {
+        orderData.createdOn = `20${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
+      }
       this.orderService.createOrder(orderData).subscribe({
         next: (order: Order) => {
           this.closeModal();
@@ -99,5 +105,13 @@ export class OrderCreateModalComponent {
       createdOn: currentDate,
       status: 'pending',
     });
+  }
+
+  dateFormatValidator(): ValidatorFn {
+    return (control: AbstractControl): {[key: string]: any} | null => {
+      if (!control.value) return null; // don't validate empty value
+      const regex = /^\d{2}\/\d{2}\/\d{2}$/;
+      return regex.test(control.value) ? null : {'dateFormat': {value: control.value}};
+    };
   }
 }
