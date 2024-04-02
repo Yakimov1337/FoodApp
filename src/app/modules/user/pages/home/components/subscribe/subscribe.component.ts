@@ -22,7 +22,6 @@ export class SubscribeComponent {
   constructor(private toastr: ToastrService) {}
 
   private animateCount(element: HTMLElement, end: number): void {
-    let start = 0;
     const duration = 5000; // Duration in milliseconds
 
     const frameDuration = 1000 / 60; // 60 FPS
