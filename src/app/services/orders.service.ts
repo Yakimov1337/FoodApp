@@ -4,7 +4,7 @@ import { catchError, map } from 'rxjs/operators';
 import { Query } from 'appwrite';
 import { environment } from 'src/environments/environment.local';
 import { databases, ID } from '../core/lib/appwrite';
-import { Order } from '../core/models';
+import { Order, OrderSubmission } from '../core/models';
 
 @Injectable({
   providedIn: 'root',
@@ -38,7 +38,7 @@ export class OrdersService {
   }
 
   // Create an Order
-  createOrder(orderData: Order): Observable<Order> {
+  createOrder(orderData: OrderSubmission): Observable<Order> {
     return from(databases.createDocument(this.databaseId, this.ordersCollectionId, ID.unique(), orderData)).pipe(
       map((result) => result as unknown as Order),
       catchError((error) => {
@@ -55,7 +55,7 @@ export class OrdersService {
       databases.listDocuments(this.databaseId, this.ordersCollectionId, [
         Query.limit(limit),
         Query.offset(offset),
-        Query.orderDesc('createdOn'),
+        Query.orderDesc('$createdAt'),
       ]),
     ).pipe(
       map((result) => {
@@ -97,6 +97,28 @@ export class OrdersService {
       map(() => undefined), // Mapping to void
       catchError((error) => {
         console.error('Error deleting order:', error);
+        throw error;
+      }),
+    );
+  }
+
+  // Fetch orders for a specific user
+  getOrdersByUserId(userId: string, page: number = 1, limit: number = 10): Observable<Order[]> {
+    const offset = (page - 1) * limit;
+    return from(
+      databases.listDocuments(this.databaseId, this.ordersCollectionId, [
+        Query.limit(limit),
+        Query.offset(offset),
+        Query.orderDesc('$createdAt'),
+        Query.equal('user', userId),
+      ]),
+    ).pipe(
+      map((result) => {
+        if (!result) throw new Error('No result');
+        return result.documents as unknown as Order[];
+      }),
+      catchError((error) => {
+        console.error('Error fetching orders for user:', error);
         throw error;
       }),
     );
