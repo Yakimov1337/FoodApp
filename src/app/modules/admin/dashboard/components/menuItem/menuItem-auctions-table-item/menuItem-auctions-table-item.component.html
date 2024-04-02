@@ -49,14 +49,14 @@
 
     <app-button
       *ngIf="currentUser$ | async as currentUser"
-      [ngClass]="{ 'button-disabled': (currentUser.role === 'Moderator' && menuItem.default) }"
-      (click)="(currentUser.role === 'Admin' || (currentUser.role === 'Moderator' && !menuItem.default)) ? openDeleteModal() : null"
+      [ngClass]="{ 'button-disabled': (currentUser.role === 'Moderator') }"
+      (click)="(currentUser.role === 'Admin') ? openDeleteModal() : null"
       impact="light"
       tone="danger"
       shape="rounded"
       size="medium">
       <div class="flex items-center justify-center space-x-2">
-        <span>{{ currentUser.role === 'Admin' || !menuItem.default ? 'Delete' : 'Not allowed' }}</span>
+        <span>{{ currentUser.role === 'Admin'  ? 'Delete' : 'Not allowed' }}</span>
         <svg-icon src="assets/icons/heroicons/outline/delete.svg"></svg-icon>
       </div>
     </app-button>
