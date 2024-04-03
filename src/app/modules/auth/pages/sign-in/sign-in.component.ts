@@ -87,4 +87,9 @@ export class SignInComponent implements OnInit {
   togglePasswordTextType() {
     this.passwordTextType = !this.passwordTextType;
   }
+
+  googleAuth(event: Event){
+    this.toastr.info('Coming soon!')
+    event.preventDefault();
+  }
 }
