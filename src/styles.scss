@@ -205,5 +205,10 @@ input[type="radio"]:checked + .toggle-bg {
   border-color: #22c55e; /* Tailwind green-500 */
 }
 
+.custom-toast-top-right {
+  top: 64px;
+  right: 12px;
+}
+
 /** Plugins **/
 @import './assets/styles/apexchart.scss';
