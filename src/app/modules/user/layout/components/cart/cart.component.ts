@@ -11,6 +11,7 @@ import { OrdersService } from '../../../../../services/orders.service';
 import { selectCurrentUser } from '../../../../../core/state/auth/auth.selectors';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { LoaderComponent } from '../../../../../shared/components/loader/loader.component';
 
 interface CartItem extends MenuItem {
   quantity: number;
@@ -19,7 +20,7 @@ interface CartItem extends MenuItem {
   selector: 'app-cart',
   templateUrl: './cart.component.html',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,LoaderComponent],
   animations: [
     trigger('slideInOut', [
       state(
@@ -44,6 +45,7 @@ export class CartComponent implements OnInit {
   cartItems: CartItem[] = [];
   totalPrice: number = 0;
   showCart: boolean = false;
+  isLoading: boolean = false;
 
   constructor(
     private store: Store,
@@ -106,8 +108,11 @@ export class CartComponent implements OnInit {
     this.currentUser$.pipe(take(1)).subscribe((currentUser) => {
       if (!currentUser || typeof currentUser.$id !== 'string') {
             this.toastr.error('User information is missing');
+            this.isLoading = false; // Reset loading state in case of an error
             return;
         }
+
+        this.isLoading = true;
 
         // Constructing order data with IDs instead of full objects
         const orderData: OrderSubmission = {
@@ -124,10 +129,12 @@ export class CartComponent implements OnInit {
                 this.store.dispatch(clearCart());
                 this.cartVisibilityService.toggleCart()
                 this.router.navigate(['/orders']);
+                this.isLoading = false;
             },
             error: (error) => {
                 console.error('Failed to place an order', error);
                 this.toastr.error('Failed to place an order');
+                this.isLoading = false;
             },
         });
     });

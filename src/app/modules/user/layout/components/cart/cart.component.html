@@ -65,8 +65,9 @@
         <span class="text-lg font-semibold">Total:</span>
         <span class="text-lg font-semibold">{{ totalPrice | currency }}</span>
       </div>
-      <button (click)="placeOrder()" class="hover:bg-primary-dark mt-6 w-full rounded-lg bg-primary py-2 text-white">
-        Place Order
+      <button (click)="placeOrder()" class="hover:bg-primary-dark mt-6 w-full rounded-lg bg-primary py-2 text-white" [disabled]="isLoading">
+        <span *ngIf="!isLoading">Place Order</span>
+        <span *ngIf="isLoading"><app-loader/></span>
       </button>
     </div>
     <ng-template #emptyCart>
