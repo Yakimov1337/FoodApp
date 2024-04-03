@@ -1,7 +1,7 @@
 import { Observable, of } from 'rxjs';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { MenuItem, Order, User } from '../../../../../../core/models';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormControl, FormArray, ValidatorFn, AbstractControl } from '@angular/forms';
 import { OrdersService } from '../../../../../../services/orders.service';
@@ -20,6 +20,7 @@ export class OrderCreateModalComponent {
   orderForm: FormGroup;
   users$: Observable<User[]> = of([]); //initial value
   menuItems$!: Observable<MenuItem[]>;
+  minDate: string;
   isMenuItemsDropdownOpen: boolean = false;
 
   constructor(
@@ -32,6 +33,7 @@ export class OrderCreateModalComponent {
   ) {
 
     const currentDate = new Date().toISOString().split('T')[0];
+    this.minDate = currentDate;
     this.orderForm = this.fb.group({
       user: ['', Validators.required],
       totalCost: [1, [Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
@@ -51,11 +53,10 @@ export class OrderCreateModalComponent {
     if (this.orderForm.valid) {
       const orderData = this.orderForm.value;
 
+      //Set selected items id's
+      orderData.menuItems = (this.orderForm.get('menuItems') as FormArray).value.map((itemId: string) => itemId.toString());
       // Convert 'createdOn' to ISO 8601 format (YYYY-MM-DD) (Appwrite problems...)
-      const dateParts = orderData.createdOn.split('/');
-      if (dateParts.length === 3) {
-        orderData.createdOn = `20${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
-      }
+      formatDate(orderData.createdOn, 'yyyy-MM-dd', 'en-US')
       this.orderService.createOrder(orderData).subscribe({
         next: (order: Order) => {
           this.closeModal();

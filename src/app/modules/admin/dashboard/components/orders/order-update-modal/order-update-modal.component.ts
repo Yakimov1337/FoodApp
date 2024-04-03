@@ -19,6 +19,7 @@ import { ToastrService } from 'ngx-toastr';
 export class OrderUpdateModalComponent implements OnInit {
   orderForm: FormGroup;
   users$: Observable<User[]>;
+  minDate: string;
   isMenuItemsDropdownOpen: boolean = false;
   orderedMenuItemTitles$: Observable<string[]> = of([]);
 
@@ -31,7 +32,8 @@ export class OrderUpdateModalComponent implements OnInit {
     private userService: UserService,
     private toastr: ToastrService,
   ) {
-    // Initialize the form
+    const currentDate = new Date().toISOString().split('T')[0];
+    this.minDate = currentDate;
     this.orderForm = this.fb.group({
       user: ['', Validators.required],
       totalCost: ['', [Validators.required, Validators.pattern(/^-?(0|[1-9]\d*)?(\.\d+)?(?<=\d)$/)]],
@@ -66,10 +68,7 @@ export class OrderUpdateModalComponent implements OnInit {
       const orderData = this.orderForm.value;
 
       // Convert 'createdOn' to ISO 8601 format (YYYY-MM-DD) (Appwrite problems...)
-      const dateParts = orderData.createdOn.split('/');
-      if (dateParts.length === 3) {
-        orderData.createdOn = `20${dateParts[0]}-${dateParts[1]}-${dateParts[2]}`;
-      }
+      formatDate(orderData.createdOn, 'yyyy-MM-dd', 'en-US')
       this.ordersService.updateOrder(this.currentOrderId, orderData).subscribe({
         next: (order) => {
           this.closeModal();
