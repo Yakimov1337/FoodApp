@@ -35,7 +35,7 @@ export class UserProfileComponent implements OnInit {
   ) {
     this.userForm = this.fb.group({
       name: [''],
-      phoneNumber: ['', Validators.pattern(/^\+?[0-9]{1,3}?[-\s]?([0-9]{1,4}[-\s]?)*$/)],
+      phoneNumber: ['', [Validators.pattern(/^\+?(\d[\s-]?){1,11}\d$/)]],
       email: [{ value: '', disabled: true }],
       role: [{ value: '', disabled: true }],
     });
@@ -60,14 +60,17 @@ export class UserProfileComponent implements OnInit {
   updatePersonalInfo(): void {
     if (this.userForm.valid && this.currentUserId) {
       const formValues = this.userForm.getRawValue();
-      const hasChanges = this.currentUser && (
-        this.currentUser.name !== formValues.name ||
-        this.currentUser.phoneNumber !== formValues.phoneNumber
-      );
+      const hasChanges =
+        this.currentUser &&
+        (this.currentUser.name !== formValues.name || this.currentUser.phoneNumber !== formValues.phoneNumber);
       if (!hasChanges) {
         this.toastr.info('No changes detected. No update required.'); // STOP if no changes are made
         return;
       }
+      // No more than 1 white spaces
+      formValues.name = formValues.name.trim().replace(/\s+/g, ' ');
+      // Reflect this change back to the form control
+      this.userForm.get('name')?.setValue(formValues.name, { emitEvent: false });
       this.isUpdatingInfo = true;
       this.userService.updateUser(this.currentUserId, this.userForm.value).subscribe({
         next: () => {
