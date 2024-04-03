@@ -65,7 +65,7 @@ export class OrderUpdateModalComponent implements OnInit {
 
   updateOrder(): void {
     if (this.orderForm.valid && this.currentOrderId) {
-      const orderData = this.orderForm.value;
+      const { menuItems, ...orderData } = this.orderForm.value; // DON'T INCLUDE MENU ITEMS ID'S IN THE UPDATE DATA
 
       // Convert 'createdOn' to ISO 8601 format (YYYY-MM-DD) (Appwrite problems...)
       formatDate(orderData.createdOn, 'yyyy-MM-dd', 'en-US')
