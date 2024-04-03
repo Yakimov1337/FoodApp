@@ -38,7 +38,7 @@ export class UserUpdateModalComponent {
       email: new FormControl({ value: '', disabled: true }),
       name: [''],
       role: ['', Validators.required],
-      phoneNumber: [''],
+      phoneNumber: ['', [Validators.pattern(/^\+?(\d[\s-]?){1,11}\d$/)]],
       imageUrl: ['', urlFormValidator()],
     });
     this.currentUser$ = this.store.pipe(select(selectCurrentUser));
