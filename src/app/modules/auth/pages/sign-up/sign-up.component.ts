@@ -18,6 +18,7 @@ import * as AuthActions from 'src/app/core/state/auth/auth.actions'
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, AngularSvgIconModule, ButtonComponent],
 })
 export class SignUpComponent implements OnInit {
+  passwordTextType!: boolean;
   signUpForm!: FormGroup;
   isLoading = false;
 
@@ -81,5 +82,14 @@ export class SignUpComponent implements OnInit {
       this.toastr.error('Form is invalid');
       this.isLoading = false;
     }
+  }
+
+  togglePasswordTextType() {
+    this.passwordTextType = !this.passwordTextType;
+  }
+
+  googleAuth(event: Event){
+    this.toastr.info('Coming soon!')
+    event.preventDefault();
   }
 }
