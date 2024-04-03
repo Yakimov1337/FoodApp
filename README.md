@@ -9,7 +9,7 @@ Welcome to **Food Squad**, a cutting-edge, fully responsive web application desi
 
 - **🍏 Fully Responsive Design**: Enjoy a seamless experience across all devices, with a layout that adjusts perfectly to fit your
 - **🔍 Theme Customization**: Choose between dark and light themes, with 7 custom color schemes to personalize your app appearance.
-- **💳 Secure Stripe Payments**: Integrated Stripe for safe and efficient financial transactions.
+- **💳 Secure Stripe Payments**: Integrated Stripe for safe and efficient financial transactions. (use 424242... as a test credit/debit card, everywhere just put 42)
 - **📄 Profile Customization**: Users can edit their profiles and upload pictures, making their user experience more personal.
 
 ## 🛠️ Tech Stack
