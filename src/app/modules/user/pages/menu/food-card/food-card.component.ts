@@ -47,9 +47,13 @@ export class FoodCardComponent {
       map((items: MenuItem[]) => {
         const exists = items.some(existingItem => existingItem.$id === item.$id);
         if (exists) {
-          this.toastr.info('Item is already added');
+          this.toastr.info('Item is already added','', {
+            positionClass: 'custom-toast-top-right',
+          });
         } else {
-          this.toastr.success('Item added to cart!');
+          this.toastr.success('Item added to cart!','',{
+            positionClass:'custom-toast-top-right'
+          });
           this.store.dispatch(addItem({ item }));
         }
       })
